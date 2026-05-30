@@ -24,7 +24,7 @@ def download_youtube_audio(url :str) ->str:
         filename = ydl.prepare_filename(info).replace(".webm", ".wav").replace(".m4a", ".wav")
     return filename
 
-data = download_youtube_audio("https://www.youtube.com/watch?v=mtiOK2QG9Q0")
+# data = download_youtube_audio("https://www.youtube.com/watch?v=mtiOK2QG9Q0")
 
 # converted in mono and 16khz for WhisperAI
 
@@ -36,7 +36,7 @@ def convert_to_wav(input_path: str) -> str:
     audio.export(output_path, format="wav")
     return output_path
 
-data_final = convert_to_wav(data)
+# data_final = convert_to_wav(data)
 
 # convert Audio into chunks
 
@@ -56,19 +56,20 @@ def chunk_audio(wav_path : str , chunk_minutes : int = 10) -> list:
     return chunks
 
 
-print(chunk_audio(data_final))
+# print(chunk_audio(data_final))
 
+# Trigger function
 
-# def process_input(source: str) -> list:
-#     if source.startswith("http://") or source.startswith("https://"):
-#         print("Detected YouTube URL. Downloading audio...")
-#         wav_path = download_youtube_audio(source)
-#     else:
-#         print("Detected local file. Converting to WAV...")
-#         wav_path = convert_to_wav(source)
+def process_input(source: str) -> list:
+    if source.startswith("http://") or source.startswith("https://"):
+        print("Detected YouTube URL. Downloading audio...")
+        wav_path = download_youtube_audio(source)
+    else:
+        print("Detected local file. Converting to WAV...")
+        wav_path = convert_to_wav(source)
 
-#     print("Chunking audio...")
-#     chunks = chunk_audio(wav_path)
-#     print(f"Audio ready — {len(chunks)} chunk(s) created.")
-#     return chunks
+    print("Chunking audio...")
+    chunks = chunk_audio(wav_path)
+    print(f"Audio ready — {len(chunks)} chunk(s) created.")
+    return chunks
 
