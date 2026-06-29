@@ -1,7 +1,11 @@
 import whisper
 import os
+from pydub import AudioSegment
 
 WHISPER_MODEL = os.getenv("WHISPER_MODEL","small")
+
+SARVAM_API_KEY = os.getenv("SARVAM_API_KEY")
+SARVAM_PIECE_SECONDS = 25
 
 _model = None
 
@@ -72,3 +76,4 @@ def transcribe_chunk_sarvam(chunk_path: str) -> str:
                 os.remove(piece_path)
 
     return full_text.strip()
+
