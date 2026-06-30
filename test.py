@@ -5,7 +5,7 @@ from utils.audio_processor import process_input
 from core.transcriber import transcribe_all
 import os
 
-# source = "https://www.youtube.com/watch?v=mtiOK2QG9Q0"
+source = "https://www.youtube.com/watch?v=mtiOK2QG9Q0"
 
 # chunks = process_input(source)
 
@@ -13,8 +13,8 @@ import os
 
 
 
-source = "https://www.youtube.com/watch?v=vFP1mgZ_LEY"
-language = "hinglish"
+# source = "https://www.youtube.com/watch?v=vFP1mgZ_LEY"
+language = "english"
 
 chunks = process_input(source)
 
