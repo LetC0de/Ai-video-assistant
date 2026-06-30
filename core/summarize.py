@@ -55,3 +55,26 @@ def summarize(transcript : str) -> str:
     )
 
     return combined_chain.invoke(combined)
+
+
+
+def generate_title(transcipt : str) -> str:
+    llm = get_llm()
+
+    
+
+    title_chain = (
+        RunnablePassthrough() | RunnableLambda(lambda x:{"text":x}) | 
+        ChatPromptTemplate.from_messages([
+             (
+                "system",
+                "Based on the meeting transcript, generate a short professional meeting title "
+                "(max 8 words). Only return the title, nothing else.",
+            ),
+            ("human", "{text}"),
+        ])
+        | llm
+        |StrOutputParser()
+    )
+
+    return title_chain.invoke(transcipt[:2000])
