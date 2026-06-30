@@ -47,4 +47,10 @@ def extract_key_decisions(transcript: str) -> str:
 
 
 
-
+def extract_questions(transcript: str) -> str:
+    chain = build_chain(
+        "From the meeting transcript, extract all unresolved questions "
+        "or topics needing follow-up. Format as a numbered list. "
+        "If none found say 'No open questions found.'"
+    )
+    return chain.invoke(transcript)
