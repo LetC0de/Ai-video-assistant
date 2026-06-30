@@ -1,52 +1,63 @@
 import whisper
 import os
+import requests
 from pydub import AudioSegment
 
-WHISPER_MODEL = os.getenv("WHISPER_MODEL","small")
+# Sarvam's sync STT-translate API rejects audio longer than 30s.
+# We slice each chunk into 25s pieces (with a 5s safety margin) before sending.
+SARVAM_PIECE_SECONDS = 25
+
+
+WHISPER_MODEL = os.getenv("WHISPER_MODEL", "small")
+
 
 SARVAM_API_KEY = os.getenv("SARVAM_API_KEY")
-SARVAM_PIECE_SECONDS = 25
+SARVAM_STT_TRANSLATE_URL = "https://api.sarvam.ai/speech-to-text-translate"
+SARVAM_MODEL = os.getenv("SARVAM_MODEL")
 
 _model = None
 
-# model loading single time locally
+
 def load_model():
 
-    global _model
+    global _model  
 
-    if _model is None:
-        print(f"loading model ...")
-        _model = whisper.load_model(WHISPER_MODEL)
-        print("whisper  model  loaded successfully ")
-    
-    return _model
-
-
-# transcribe single chunk
-def transcribe_chunk(chunk_path : str , translate : bool = False ) -> str:
-
-    model = load_model()
-    task = "translate" if translate else "transcribe"
-    result = model.transcribe(chunk_path, task = task)
-    
-    return result["text"]
+    if _model is None: 
+        print(f"Loading Whisper model: {WHISPER_MODEL} ...")
+        _model = whisper.load_model(WHISPER_MODEL) 
+        print("Whisper model loaded.")
+    return _model 
 
 
-# transcribe all chunks 
-def transcribe_all(chunks : list , translate : bool = False) -> str:
+def transcribe_chunk_whisper(chunk_path: str) -> str:
 
-    full_transcript = ""
+    model = load_model()  
 
-    for i , chunk in enumerate(chunks):
-        print(f"Transcribing chunk {i+1} ")
-        text = transcribe_chunk(chunk, translate = translate)
+    result = model.transcribe(chunk_path, task="transcribe")  
+    return result["text"]  
 
-        full_transcript += text + " "
-    
-    print("Transcription Completed")
 
-    return full_transcript
+def _send_to_sarvam(piece_path: str) -> str:
+    """Send one ≤30s WAV file to Sarvam and return the English transcript."""
+    headers = {"api-subscription-key": SARVAM_API_KEY}
 
+    with open(piece_path, "rb") as f:
+        files = {"file": (os.path.basename(piece_path), f, "audio/wav")}
+        data = {"model": SARVAM_MODEL, "with_diarization": "false"}
+        response = requests.post(
+            SARVAM_STT_TRANSLATE_URL,
+            headers=headers,
+            files=files,
+            data=data,
+            timeout=120,
+        )
+
+    if not response.ok:
+        print(f"\n❌ Sarvam returned {response.status_code}")
+        print(f"Response body: {response.text}\n")
+        response.raise_for_status()
+
+    return response.json().get("transcript", "")
 
 
 def transcribe_chunk_sarvam(chunk_path: str) -> str:
@@ -76,4 +87,39 @@ def transcribe_chunk_sarvam(chunk_path: str) -> str:
                 os.remove(piece_path)
 
     return full_text.strip()
+
+   
+
+
+
+def transcribe_chunk(chunk_path: str, language: str = "english") -> str:
+    """
+    Route one chunk to Whisper or Sarvam depending on language choice.
+    - english  → Whisper (local model)
+    - hinglish → Sarvam (translates to English while transcribing)
+    """
+    if language.lower() == "hinglish":
+        return transcribe_chunk_sarvam(chunk_path)
+    return transcribe_chunk_whisper(chunk_path)
+
+
+def transcribe_all(chunks: list, language: str = "english") -> str:
+
+    full_transcript = "" 
+
+    engine = "Sarvam AI" if language.lower() == "hinglish" else "Whisper"
+    print(f"Using {engine} for transcription.")
+
+    for i, chunk in enumerate(chunks):  
+
+        print(f"Transcribing chunk {i + 1}/{len(chunks)}...")
+
+        text = transcribe_chunk(chunk, language=language)  
+
+        full_transcript += text + " "  
+
+    print("Transcription complete.")
+
+    return full_transcript.strip()  
+
 
