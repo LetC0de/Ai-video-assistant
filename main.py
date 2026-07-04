@@ -56,7 +56,7 @@ if __name__ == "__main__":
     rag_chain = result["rag_chain"]
     while True:
         question = input("You: ").strip()
-        if question.lower() in ["exit", "quit", "bye"]:
+        if question.lower() in ["exit", "quit", "bye", "goodbye"]:
             print(" bye bye!")
             break
         if not question:
