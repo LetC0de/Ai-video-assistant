@@ -63,3 +63,4 @@ if __name__ == "__main__":
             continue
         answer = ask_question(rag_chain, question)
         print(f"\n Assistant: {answer}\n")
+        
