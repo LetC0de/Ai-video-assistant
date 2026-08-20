@@ -4,11 +4,12 @@ import os
 import uuid
 import time
 
-from utils.youtube_transcript import get_youtube_transcript
-from core.transcriber import transcribe_all
+from src.utils.youtube_transcript import get_youtube_transcript
+from src.utils.transcriber import transcribe_all
 
 DOWNLOAD_DIR = 'downloads'
-os.makedirs(DOWNLOAD_DIR,exist_ok = True)
+os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+
 
 def download_youtube_audio(url: str) -> str:
     file_id = str(uuid.uuid4())
@@ -30,10 +31,8 @@ def download_youtube_audio(url: str) -> str:
         "noplaylist": True,
     }
 
-
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
-
         video_id = info["id"]
 
     wav_path = os.path.join(
@@ -45,42 +44,34 @@ def download_youtube_audio(url: str) -> str:
 
     return wav_path
 
-# data = download_youtube_audio("https://www.youtube.com/watch?v=mtiOK2QG9Q0")
 
 # converted in mono and 16khz for WhisperAI
-
 def convert_to_wav(input_path: str) -> str:
     """Convert any audio/video file to WAV format using pydub."""
     output_path = os.path.splitext(input_path)[0] + "_converted.wav"
     audio = AudioSegment.from_file(input_path)
-    audio = audio.set_channels(1).set_frame_rate(16000) #16khz
+    audio = audio.set_channels(1).set_frame_rate(16000)  # 16khz
     audio.export(output_path, format="wav")
     return output_path
 
-# data_final = convert_to_wav(data)
 
 # convert Audio into chunks
-
-def chunk_audio(wav_path : str , chunk_minutes : int = 10) -> list:
+def chunk_audio(wav_path: str, chunk_minutes: int = 10) -> list:
     audio = AudioSegment.from_wav(wav_path)
     chunk_ms = chunk_minutes * 60 * 1000
 
     chunks = []
 
-    for i, start in enumerate(range(0,len(audio),chunk_ms)):
-        chunk = audio[start : start + chunk_ms]
+    for i, start in enumerate(range(0, len(audio), chunk_ms)):
+        chunk = audio[start: start + chunk_ms]
         chunk_path = f"{wav_path}_chunk_{i}.wav"
-        chunk.export(chunk_path , format = "wav")
-
+        chunk.export(chunk_path, format="wav")
         chunks.append(chunk_path)
 
     return chunks
 
 
-# print(chunk_audio(data_final))
-
 # Trigger function
-
 def _transcribe_from_audio(wav_path: str, language: str = "english") -> str:
     """Existing Whisper/Sarvam path: chunk the audio and transcribe it."""
     print("Chunking audio...")
