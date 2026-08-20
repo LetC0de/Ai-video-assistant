@@ -43,3 +43,4 @@ def load_rag_chain():
 def ask_question(rag_chain, question: str) -> str:
     answer = rag_chain.invoke(question)
     return answer
+
