@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 from src.upload.router import router as upload_router
 from src.query.router import router as query_router
+from src.user.router import user_router
 
 load_dotenv()
 
@@ -20,6 +21,7 @@ app.add_middleware(
 
 app.include_router(upload_router)
 app.include_router(query_router)
+app.include_router(user_router)
 
 
 @app.get("/health")
