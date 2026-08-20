@@ -60,4 +60,7 @@ if __name__ == "__main__":
             continue
         answer = ask_question(rag_chain, question)
         print(f"\n Assistant: {answer}\n")
-        
+
+
+
+        # https://youtu.be/UMYtqHptYvA?si=a1463qvooHn6bUl6
