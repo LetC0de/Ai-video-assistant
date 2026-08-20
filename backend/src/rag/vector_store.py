@@ -3,9 +3,10 @@ from dotenv import load_dotenv
 
 from qdrant_client import QdrantClient
 from langchain_qdrant import QdrantVectorStore
-from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
+
+from src.rag.embeddings import get_embeddings
 
 load_dotenv()
 
@@ -13,14 +14,6 @@ QDRANT_URL = os.getenv("QDRANT_URL")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 
 COLLECTION_NAME = "meeting_transcript"
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
-
-
-def get_embeddings():
-    return HuggingFaceEmbeddings(
-        model_name=EMBEDDING_MODEL,
-        model_kwargs={"device": "cpu"},
-    )
 
 
 def get_qdrant_client() -> QdrantClient:
@@ -72,10 +65,3 @@ def load_vector_store() -> QdrantVectorStore:
         embedding=embeddings,
     )
     return vector_store
-
-
-def get_retriever(vector_store: QdrantVectorStore, k: int = 4):
-    return vector_store.as_retriever(
-        search_type="similarity",
-        search_kwargs={"k": k},
-    )
