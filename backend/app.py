@@ -1,66 +1,27 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
-from src.utils.audio_processor import process_input
-from src.rag.summarize import summarize, generate_title
-from src.rag.extractor import extract_action_items, extract_key_decisions, extract_questions
-from src.rag.engine import build_rag_chain, ask_question
 
+from src.upload.router import router as upload_router
+from src.query.router import router as query_router
 
 load_dotenv()
 
-def run_pipeline(source :str, language :str = "english") -> dict:
-    print("starting AI Video Assistant")
-
-    transcript = process_input(source, language)
-    print(f"raw transcription (first 300 characters ) {transcript[:300]}")
-
-    title = generate_title(transcript)
-
-    summary = summarize(transcript)
-
-    action_item = extract_action_items(transcript)
-
-    decisions = extract_key_decisions(transcript)
-    questions = extract_questions(transcript)
-    
-    rag_chain = build_rag_chain(transcript)
-
-    return {
-        "title": title,
-        "transcript": transcript,
-        "summary": summary,
-        "action_items": action_item,
-        "key_decisions": decisions,
-        "open_questions": questions,
-        "rag_chain": rag_chain,
-    }
-
-if __name__ == "__main__":
-
-    source = input("Enter YouTube URL or local file path: ").strip()
-    language = input("Language (english/hinglish): ").strip() or "english"
-    result = run_pipeline(source, language)
-
-    print("\n" + "=" * 60)
-    print(f" Title: {result['title']}")
-    print(f"\n Summary:\n{result['summary']}")
-    print(f"\n Action Items:\n{result['action_items']}")
-    print(f"\n Key Decisions:\n{result['key_decisions']}")
-    print(f"\n Open Questions:\n{result['open_questions']}")
-    print("=" * 60)
+app = FastAPI(title="AI Video Assistant API")
 
 
-    print("\n Chat with your meeting (type 'exit' to quit)\n")
-    rag_chain = result["rag_chain"]
-    while True:
-        question = input("You: ").strip()
-        if question.lower() in ["exit", "quit", "bye", "goodbye"]:
-            print(" bye bye!")
-            break
-        if not question:
-            continue
-        answer = ask_question(rag_chain, question)
-        print(f"\n Assistant: {answer}\n")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(upload_router)
+app.include_router(query_router)
 
 
-
-        # https://youtu.be/UMYtqHptYvA?si=a1463qvooHn6bUl6
+@app.get("/health")
+def health():
+    return {"status": "ok"}
