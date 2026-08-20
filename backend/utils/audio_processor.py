@@ -4,6 +4,9 @@ import os
 import uuid
 import time
 
+from utils.youtube_transcript import get_youtube_transcript
+from core.transcriber import transcribe_all
+
 DOWNLOAD_DIR = 'downloads'
 os.makedirs(DOWNLOAD_DIR,exist_ok = True)
 
@@ -78,15 +81,37 @@ def chunk_audio(wav_path : str , chunk_minutes : int = 10) -> list:
 
 # Trigger function
 
-def process_input(source: str) -> list:
-    if source.startswith("http://") or source.startswith("https://"):
-        print("Detected YouTube URL. Downloading audio...")
-        wav_path = download_youtube_audio(source)
-    else:
-        print("Detected local file. Converting to WAV...")
-        wav_path = convert_to_wav(source)
-
+def _transcribe_from_audio(wav_path: str, language: str = "english") -> str:
+    """Existing Whisper/Sarvam path: chunk the audio and transcribe it."""
     print("Chunking audio...")
     chunks = chunk_audio(wav_path)
     print(f"Audio ready — {len(chunks)} chunk(s) created.")
-    return chunks
+    return transcribe_all(chunks, language=language)
+
+
+def process_input(source: str, language: str = "english") -> str:
+    """
+    Returns a transcript string (NOT a list of chunk paths anymore).
+
+    Flow:
+      - Local file  -> convert to WAV -> Whisper/Sarvam
+      - YouTube URL -> try official transcript API first (no download, no 403)
+                       -> fall back to yt-dlp + Whisper if unavailable
+    """
+    # ── Local file ───────────────────────────────────────────────
+    if not (source.startswith("http://") or source.startswith("https://")):
+        print("Detected local file. Converting to WAV...")
+        wav_path = convert_to_wav(source)
+        return _transcribe_from_audio(wav_path, language=language)
+
+    # ── YouTube URL ──────────────────────────────────────────────
+    print("🎬 Trying YouTube official transcript...")
+    try:
+        text = get_youtube_transcript(source)
+        print("✅ YouTube transcript found!")
+        return text
+    except Exception as e:
+        print(f"⚠️ Transcript unavailable: {e}")
+        print("🔄 Falling back to yt-dlp + Whisper...")
+        wav_path = download_youtube_audio(source)
+        return _transcribe_from_audio(wav_path, language=language)
