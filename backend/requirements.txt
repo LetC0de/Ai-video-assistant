@@ -39,3 +39,19 @@ python-dotenv>=1.0.0              # Load API keys from .env
 numpy>=1.26.0
 tqdm>=4.66.0                      # Progress bars
 requests>=2.32.0
+
+# ── API Server (FastAPI) ─────────────────────────────────────────────────────
+fastapi>=0.110.0                  # Web framework / REST API
+uvicorn>=0.29.0                   # ASGI server
+python-multipart>=0.0.9           # Form/file upload support
+pydantic[email]>=2.6.0            # Schemas + EmailStr validation
+pydantic-settings>=2.2.0          # Typed settings from .env
+
+# ── Database (Postgres + migrations) ──────────────────────────────────────────
+sqlalchemy>=2.0.0                 # ORM
+psycopg2-binary>=2.9.0            # Postgres driver (Neon)
+alembic>=1.13.0                   # DB migrations
+
+# ── Auth (JWT + password hashing) ─────────────────────────────────────────────
+pyjwt>=2.8.0                      # JWT encode/decode
+pwdlib[argon2]>=0.3.0             # Argon2 password hashing (recommended)
