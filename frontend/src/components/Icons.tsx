@@ -8,8 +8,8 @@ export function LogoMark({ size = 30 }: IconProps) {
     <svg width={size} height={size} viewBox="0 0 64 64" fill="none" aria-hidden="true">
       <defs>
         <linearGradient id="logo-g" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#6d3bff" />
-          <stop offset="1" stopColor="#19c3e6" />
+          <stop offset="0" stopColor="var(--brand)" />
+          <stop offset="1" stopColor="var(--spark)" />
         </linearGradient>
       </defs>
       <rect x="4" y="4" width="56" height="56" rx="18" fill="url(#logo-g)" />

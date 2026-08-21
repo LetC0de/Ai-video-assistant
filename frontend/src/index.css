@@ -1,51 +1,70 @@
 /* ============================================================
-   Vidya — "Electric Garden"
-   A light, vibrant workspace for video & meeting intelligence.
-   Cool violet/indigo brand with a cyan spark; soft lavender base.
+   Vidya — token-driven theming
+   Every color is a CSS variable. The default :root IS theme "ember".
+   Switch themes by setting data-theme on <html>:
+     ember · verdant · cocoa · nocturne
    Fonts: Fraunces (display serif) + Outfit (humanist sans)
    ============================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500;1,9..144,600;1,9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Palette — light lavender base, vibrant violet/indigo accents */
-  --bg: #f5f4fc;
-  --bg-deep: #ece9f7;
-  --surface: #ffffff;
-  --surface-2: #ffffff;
+  /* ===== THEME: ember (default) — warm cream + terracotta + sage ===== */
+  --bg: #faf6ef;
+  --bg-deep: #f1eae0;
+  --bg-rgb: 250, 246, 239;
+  --surface: #fffdfa;
+  --surface-2: #fffdfa;
 
-  --ink: #211c33;
-  --ink-soft: #5b5474;
-  --ink-faint: #9b94b4;
+  --ink: #2b2724;
+  --ink-soft: #6b6259;
+  --ink-faint: #a89e91;
 
-  --line: #e6e1f4;
-  --line-soft: #efecf9;
+  --line: #ece4d8;
+  --line-soft: #f4eee4;
 
-  --brand: #6d3bff;          /* electric violet */
-  --brand-deep: #4a1fd1;
-  --brand-glow: rgba(109, 59, 255, 0.22);
+  --brand: #e07a5f;          /* terracotta */
+  --brand-deep: #c25e45;
+  --brand-glow: rgba(224, 122, 95, 0.22);
+  --brand-rgb: 224, 122, 95;
 
-  --spark: #19c3e6;          /* cyan spark */
-  --spark-soft: #d8f5fc;
+  --spark: #81b29a;          /* sage */
+  --spark-soft: #dceae2;
+  --accent-rgb: 129, 178, 154;
 
-  --indigo: #3b2bff;         /* indigo */
-  --indigo-soft: #e3e2ff;
-  --pink: #ff5c8a;           /* pink */
-  --pink-soft: #ffe1ec;
-  --amber: #f4a62a;          /* amber */
-  --amber-soft: #fdeccb;
-  --leaf: #2fae6b;           /* kiwi */
-  --leaf-soft: #d6f0e0;
-  --blue: #3b6bff;           /* blue */
-  --blue-soft: #dde6ff;
+  --indigo: #c25e45;         /* reused as deep gradient partner */
+  --indigo-soft: #f3e2da;
+  --pink: #e9a23b;           /* amber-coral */
+  --pink-soft: #faecd6;
+  --amber: #e0a82e;          /* honey */
+  --amber-soft: #f7eccb;
+  --leaf: #6fa98b;           /* sage deeper */
+  --leaf-soft: #dceae2;
+  --leaf-rgb: 111, 169, 139;
+  --blue: #c98a4b;           /* ochre (no blue) */
+  --blue-soft: #f5e6d2;
 
-  --danger: #e5484d;
-  --success: var(--leaf);
+  --danger: #d1495b;
+  --success: #6fa98b;
 
-  --shadow-sm: 0 1px 2px rgba(60, 40, 120, 0.07);
-  --shadow-md: 0 6px 18px -6px rgba(60, 40, 120, 0.18);
-  --shadow-lg: 0 24px 60px -18px rgba(60, 40, 120, 0.3);
-  --shadow-pop: 0 10px 30px -8px rgba(60, 40, 120, 0.24);
+  --theme-shadow-rgb: 60, 40, 30;   /* warm shadow tint */
+  --overlay-bg: rgba(43, 34, 28, 0.4);
+
+  /* Ambient background blobs */
+  --blob-violet: #f0d9c8;
+  --blob-spark: #d9e7de;
+  --blob-indigo: #efe2cc;
+
+  /* Mock video card gradient */
+  --video-1: #e07a5f;
+  --video-2: #81b29a;
+  --video-3: #e0a82e;
+  --video-wash: rgba(40, 25, 15, 0.55);
+
+  --shadow-sm: 0 1px 2px rgba(var(--theme-shadow-rgb), 0.07);
+  --shadow-md: 0 6px 18px -6px rgba(var(--theme-shadow-rgb), 0.18);
+  --shadow-lg: 0 24px 60px -18px rgba(var(--theme-shadow-rgb), 0.3);
+  --shadow-pop: 0 10px 30px -8px rgba(var(--theme-shadow-rgb), 0.24);
 
   --radius-sm: 10px;
   --radius-md: 16px;
@@ -66,7 +85,162 @@
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --mobile-pad: 14px;
-  --overlay-bg: rgba(33, 28, 51, 0.38);
+}
+
+/* ===== THEME: verdant — pale mint + emerald + amber gold ===== */
+[data-theme='verdant'] {
+  --bg: #f5f8f4;
+  --bg-deep: #e8f0eb;
+  --bg-rgb: 245, 248, 244;
+  --surface: #ffffff;
+  --surface-2: #ffffff;
+
+  --ink: #1c2b27;
+  --ink-soft: #4f615a;
+  --ink-faint: #93a79e;
+
+  --line: #dde9e2;
+  --line-soft: #eef4ef;
+
+  --brand: #117c6b;          /* emerald */
+  --brand-deep: #0b4d43;     /* pine */
+  --brand-glow: rgba(17, 124, 107, 0.22);
+  --brand-rgb: 17, 124, 107;
+
+  --spark: #e0a100;          /* amber gold */
+  --spark-soft: #f7eccb;
+  --accent-rgb: 224, 161, 0;
+
+  --indigo: #0b4d43;
+  --indigo-soft: #dcebe5;
+  --pink: #e08a5b;
+  --pink-soft: #fae5d6;
+  --amber: #e0a100;
+  --amber-soft: #f7eccb;
+  --leaf: #117c6b;
+  --leaf-soft: #dcebe5;
+  --leaf-rgb: 17, 124, 107;
+  --blue: #3e8e7e;           /* teal (no blue) */
+  --blue-soft: #dcebe5;
+
+  --danger: #d1495b;
+  --success: #117c6b;
+
+  --theme-shadow-rgb: 20, 50, 40;
+  --overlay-bg: rgba(20, 38, 32, 0.42);
+
+  --blob-violet: #cde7dc;
+  --blob-spark: #f6e7be;
+  --blob-indigo: #d5e8df;
+
+  --video-1: #117c6b;
+  --video-2: #1fa37e;
+  --video-3: #e0a100;
+  --video-wash: rgba(8, 35, 28, 0.55);
+}
+
+/* ===== THEME: cocoa — cream + marigold + coral ===== */
+[data-theme='cocoa'] {
+  --bg: #fbf7f0;
+  --bg-deep: #f3ebdd;
+  --bg-rgb: 251, 247, 240;
+  --surface: #fffefb;
+  --surface-2: #fffefb;
+
+  --ink: #2e2620;
+  --ink-soft: #6e6155;
+  --ink-faint: #ad9e8e;
+
+  --line: #eee4d4;
+  --line-soft: #f6efe3;
+
+  --brand: #e89b3c;          /* marigold */
+  --brand-deep: #c97e22;
+  --brand-glow: rgba(232, 155, 60, 0.22);
+  --brand-rgb: 232, 155, 60;
+
+  --spark: #e8725b;          /* soft coral */
+  --spark-soft: #faded5;
+  --accent-rgb: 232, 114, 91;
+
+  --indigo: #c97e22;
+  --indigo-soft: #f6e7cd;
+  --pink: #e8725b;
+  --pink-soft: #faded5;
+  --amber: #e89b3c;
+  --amber-soft: #f6e7cd;
+  --leaf: #8ba35a;           /* olive */
+  --leaf-soft: #e9efd6;
+  --leaf-rgb: 139, 163, 90;
+  --blue: #c98a4b;           /* ochre */
+  --blue-soft: #f5e6d2;
+
+  --danger: #d1495b;
+  --success: #5e8c4e;
+
+  --theme-shadow-rgb: 60, 42, 25;
+  --overlay-bg: rgba(46, 32, 20, 0.42);
+
+  --blob-violet: #f6e2c0;
+  --blob-spark: #fad9ce;
+  --blob-indigo: #f1e6cf;
+
+  --video-1: #e89b3c;
+  --video-2: #e8725b;
+  --video-3: #c97e22;
+  --video-wash: rgba(45, 28, 12, 0.55);
+}
+
+/* ===== THEME: nocturne — dark charcoal + amber gold + coral ===== */
+[data-theme='nocturne'] {
+  --bg: #1c1a17;
+  --bg-deep: #26231f;
+  --bg-rgb: 28, 26, 23;
+  --surface: #2a2723;
+  --surface-2: #2a2723;
+
+  --ink: #f3ede3;
+  --ink-soft: #b7ae9e;
+  --ink-faint: #837a6b;
+
+  --line: #3a352e;
+  --line-soft: #322e28;
+
+  --brand: #f0b429;          /* amber gold */
+  --brand-deep: #d99a12;
+  --brand-glow: rgba(240, 180, 41, 0.2);
+  --brand-rgb: 240, 180, 41;
+
+  --spark: #e8563d;          /* warm coral */
+  --spark-soft: #4a2a24;
+  --accent-rgb: 232, 86, 61;
+
+  --indigo: #d99a12;
+  --indigo-soft: #3a3120;
+  --pink: #e8563d;
+  --pink-soft: #4a2a24;
+  --amber: #f0b429;
+  --amber-soft: #3a3120;
+  --leaf: #6fa98b;
+  --leaf-soft: #2c3a33;
+  --leaf-rgb: 111, 169, 139;
+  --blue: #c98a4b;
+  --blue-soft: #3a2e1e;
+
+  --danger: #e5564d;
+  --success: #6fa98b;
+
+  --theme-shadow-rgb: 0, 0, 0;
+  --overlay-bg: rgba(0, 0, 0, 0.5);
+
+  --blob-violet: #4a3a1a;
+  --blob-spark: #3a2a24;
+  --blob-indigo: #2e3a2e;
+
+  --video-1: #f0b429;
+  --video-2: #e8563d;
+  --video-3: #c97e22;
+  --video-wash: rgba(0, 0, 0, 0.55);
 }
 
 * {
@@ -120,9 +294,9 @@ html {
   opacity: 0.5;
 }
 
-.blob--violet { width: 46vw; height: 46vw; background: #d9ccff; top: -14vw; right: -8vw; }
-.blob--spark  { width: 40vw; height: 40vw; background: #c8eefb; bottom: -16vw; left: -6vw; }
-.blob--indigo { width: 30vw; height: 30vw; background: #d8d6ff; top: 30vh; left: 34vw; opacity: 0.4; }
+.blob--violet { width: 46vw; height: 46vw; background: var(--blob-violet); top: -14vw; right: -8vw; }
+.blob--spark  { width: 40vw; height: 40vw; background: var(--blob-spark); bottom: -16vw; left: -6vw; }
+.blob--indigo { width: 30vw; height: 30vw; background: var(--blob-indigo); top: 30vh; left: 34vw; opacity: 0.4; }
 
 .grain {
   position: absolute;

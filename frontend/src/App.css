@@ -82,13 +82,13 @@
 }
 
 .toast--error {
-  background: #fff;
+  background: var(--surface);
   border: 1.5px solid #f4c2c2;
   color: var(--danger);
 }
 
 .toast--warn {
-  background: #fff;
+  background: var(--surface);
   border: 1.5px solid var(--amber-soft);
   color: #a86808;
 }

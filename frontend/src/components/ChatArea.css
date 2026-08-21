@@ -15,7 +15,7 @@
   gap: 10px;
   height: calc(var(--mobile-header-h) + var(--safe-top));
   padding: var(--safe-top) var(--mobile-pad) 0;
-  background: rgba(245, 244, 252, 0.85);
+  background: rgba(var(--bg-rgb), 0.85);
   backdrop-filter: blur(18px) saturate(1.1);
   -webkit-backdrop-filter: blur(18px) saturate(1.1);
   border-bottom: 1px solid var(--line);
@@ -29,7 +29,7 @@
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: #fff;
+  background: var(--surface);
   border: 1.5px solid var(--line);
   box-shadow: var(--shadow-sm);
   color: var(--ink-soft);
@@ -336,7 +336,7 @@
 }
 
 .msg__answer {
-  background: #fff;
+  background: var(--surface);
   border: 1.5px solid var(--line-soft);
   border-radius: 18px 18px 18px 4px;
   padding: 16px 20px;
@@ -455,7 +455,7 @@
 
 /* ---------- Typing indicator ---------- */
 .msg--thinking .msg__body {
-  background: #fff;
+  background: var(--surface);
   border: 1.5px solid var(--line-soft);
   border-radius: 18px 18px 18px 4px;
   padding: 15px 20px;
@@ -667,7 +667,7 @@
 .composer {
   width: 100%;
   max-width: 760px;
-  background: #fff;
+  background: var(--surface);
   border: 1.5px solid var(--line);
   border-radius: 20px;
   padding: 12px 12px 10px;
@@ -879,7 +879,7 @@
 
   .chat__composer-wrap {
     padding: 10px var(--mobile-pad) calc(10px + var(--safe-bottom));
-    background: linear-gradient(180deg, transparent 0%, rgba(245, 244, 252, 0.7) 30%);
+    background: linear-gradient(180deg, transparent 0%, rgba(var(--bg-rgb), 0.7) 30%);
   }
 
   .welcome__inner {
@@ -890,12 +890,12 @@
     border-radius: 20px;
     padding: 9px 9px 7px;
     border-color: var(--line);
-    box-shadow: 0 8px 24px -12px rgba(60, 40, 120, 0.35);
+    box-shadow: 0 8px 24px -12px rgba(var(--theme-shadow-rgb), 0.35);
   }
 
   .composer--focused {
     border-color: var(--brand);
-    box-shadow: 0 0 0 4px var(--brand-glow), 0 8px 24px -12px rgba(60, 40, 120, 0.35);
+    box-shadow: 0 0 0 4px var(--brand-glow), 0 8px 24px -12px rgba(var(--theme-shadow-rgb), 0.35);
   }
 
   .composer__input {

@@ -48,10 +48,10 @@ const STEPS = [
 // Source types Vidya accepts, each with a recognizable accent color.
 const FORMATS = [
   { label: 'YouTube', color: '#e5484d' },
-  { label: 'MP4', color: '#6d3bff' },
-  { label: 'MP3', color: '#19c3e6' },
-  { label: 'WAV', color: '#ff5c8a' },
-  { label: 'M4A', color: '#2fae6b' },
+  { label: 'MP4', color: '#e07a5f' },
+  { label: 'MP3', color: '#e0a82e' },
+  { label: 'WAV', color: '#c98a4b' },
+  { label: 'M4A', color: '#81b29a' },
 ];
 
 function FeatureIcon({ name }: { name: string }) {

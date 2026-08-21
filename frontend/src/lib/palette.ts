@@ -8,14 +8,14 @@ export interface MeetingColor {
 }
 
 const PALETTE: MeetingColor[] = [
-  { main: '#6d3bff', soft: '#ece4ff', ink: '#4a1fd1' }, // violet
-  { main: '#19c3e6', soft: '#d8f5fc', ink: '#0b7e98' }, // cyan
-  { main: '#7c5cff', soft: '#ece7ff', ink: '#5236c9' }, // indigo
-  { main: '#ff5c8a', soft: '#ffe1ec', ink: '#c42e60' }, // pink
-  { main: '#f4a62a', soft: '#fdeccb', ink: '#a86808' }, // amber
-  { main: '#2fae6b', soft: '#d6f0e0', ink: '#16713f' }, // kiwi
-  { main: '#3b6bff', soft: '#dde6ff', ink: '#1f47c2' }, // blue
-  { main: '#e85656', soft: '#fadada', ink: '#a82a2a' }, // poppy
+  { main: '#e07a5f', soft: '#f6e0d8', ink: '#b14e36' }, // terracotta
+  { main: '#81b29a', soft: '#dceae2', ink: '#4f8068' }, // sage
+  { main: '#e0a82e', soft: '#f7eccb', ink: '#a8790f' }, // honey
+  { main: '#c98a4b', soft: '#f5e6d2', ink: '#9a6422' }, // ochre
+  { main: '#8ba35a', soft: '#e9efd6', ink: '#5f7a38' }, // olive
+  { main: '#6fa98b', soft: '#dceae2', ink: '#3f7c60' }, // pine-green
+  { main: '#d98c5f', soft: '#f7e3d6', ink: '#a85f36' }, // clay
+  { main: '#b5853f', soft: '#f3e7cd', ink: '#855c1f' }, // bronze
 ];
 
 export function meetingColor(id: number): MeetingColor {
