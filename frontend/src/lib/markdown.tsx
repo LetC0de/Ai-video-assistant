@@ -83,10 +83,12 @@ export function Markdown({ text }: { text: string }) {
       continue;
     }
 
-    const h = trimmed.match(/^(#{1,3})\s+(.*)/);
-    if (h) {
+    // Headings — tolerate `### Heading` (standard) and `###Heading` (no space,
+    // which some LLMs emit) so a literal `###` never leaks into the UI.
+    const h = trimmed.match(/^(#{1,6})\s*(.*)$/);
+    if (h && h[2].length > 0 && !/^#/.test(h[2])) {
       flushList();
-      const level = h[1].length as 1 | 2 | 3;
+      const level = Math.min(h[1].length, 3) as 1 | 2 | 3;
       const Tag = `h${level}` as 'h1' | 'h2' | 'h3';
       blocks.push(<Tag key={blocks.length}>{renderInline(h[2], i)}</Tag>);
       continue;
@@ -112,6 +114,19 @@ export function Markdown({ text }: { text: string }) {
 
     if (/^[-*_]{3,}$/.test(trimmed)) {
       blocks.push(<hr key={blocks.length} />);
+      continue;
+    }
+
+    // Inline "Label: value" lines (Task: / Owner: / Deadline:) read flat as
+    // plain prose; bold the label so each field stands out.
+    const labelMatch = trimmed.match(/^([A-Z][A-Za-z '\-]{1,28}):\s+(.*)$/);
+    if (labelMatch) {
+      blocks.push(
+        <p key={blocks.length}>
+          <span className="md-label">{labelMatch[1]}:</span>{' '}
+          {renderInline(labelMatch[2], i)}
+        </p>
+      );
       continue;
     }
 
