@@ -5,6 +5,7 @@ from alembic import context
 
 from src.utils.settings import settings
 from src.user.model import UserModel
+from src.meeting.model import MeetingModel
 from src.utils.db import base
 
 # this is the Alembic Config object, which provides

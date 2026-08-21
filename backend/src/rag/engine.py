@@ -28,19 +28,18 @@ def _build_chain(vector_store, prompt=None):
     return rag_chain
 
 
-def build_rag_chain(transcript: str):
-    """Build a fresh vector store from a transcript and return the RAG chain."""
-    vector_store = build_vector_store(transcript)
+def build_rag_chain(transcript: str, collection_name: str):
+    """Build a fresh per-meeting vector store from a transcript and return the RAG chain."""
+    vector_store = build_vector_store(transcript, collection_name)
     return _build_chain(vector_store)
 
 
-def load_rag_chain():
-    """Load an existing vector store from Qdrant and return the RAG chain."""
-    vector_store = load_vector_store()
+def load_rag_chain(collection_name: str):
+    """Load an existing per-meeting vector store from Qdrant and return the RAG chain."""
+    vector_store = load_vector_store(collection_name)
     return _build_chain(vector_store)
 
 
 def ask_question(rag_chain, question: str) -> str:
     answer = rag_chain.invoke(question)
     return answer
-
