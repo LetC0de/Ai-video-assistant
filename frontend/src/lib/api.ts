@@ -69,22 +69,20 @@ export async function getMeeting(id: number): Promise<Meeting> {
 // meeting record. URLs go as JSON; files go as multipart/form-data.
 export async function processMeeting(input: ProcessMeetingInput): Promise<Meeting> {
   let res: Response;
+  // Backend's /meetings/process expects multipart/form-data (source + file are
+  // Form/File params), so send URLs as form fields too — not JSON.
+  const form = new FormData();
   if (input.file) {
-    const form = new FormData();
     form.append('file', input.file);
-    if (input.language) form.append('language', input.language);
-    res = await fetch(`${BASE}/meetings/process`, {
-      method: 'POST',
-      headers: authHeaders(),
-      body: form,
-    });
   } else {
-    res = await fetch(`${BASE}/meetings/process`, {
-      method: 'POST',
-      headers: authHeaders({ 'Content-Type': 'application/json' }),
-      body: JSON.stringify({ source: input.url ?? '', language: input.language ?? 'english' }),
-    });
+    form.append('source', input.url ?? '');
   }
+  if (input.language) form.append('language', input.language);
+  res = await fetch(`${BASE}/meetings/process`, {
+    method: 'POST',
+    headers: authHeaders(),
+    body: form,
+  });
   return handle<Meeting>(res);
 }
 
