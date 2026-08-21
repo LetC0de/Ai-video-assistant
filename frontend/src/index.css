@@ -1,0 +1,232 @@
+/* ============================================================
+   Vidya — "Electric Garden"
+   A light, vibrant workspace for video & meeting intelligence.
+   Cool violet/indigo brand with a cyan spark; soft lavender base.
+   Fonts: Fraunces (display serif) + Outfit (humanist sans)
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500;1,9..144,600;1,9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Palette — light lavender base, vibrant violet/indigo accents */
+  --bg: #f5f4fc;
+  --bg-deep: #ece9f7;
+  --surface: #ffffff;
+  --surface-2: #ffffff;
+
+  --ink: #211c33;
+  --ink-soft: #5b5474;
+  --ink-faint: #9b94b4;
+
+  --line: #e6e1f4;
+  --line-soft: #efecf9;
+
+  --brand: #6d3bff;          /* electric violet */
+  --brand-deep: #4a1fd1;
+  --brand-glow: rgba(109, 59, 255, 0.22);
+
+  --spark: #19c3e6;          /* cyan spark */
+  --spark-soft: #d8f5fc;
+
+  --indigo: #3b2bff;         /* indigo */
+  --indigo-soft: #e3e2ff;
+  --pink: #ff5c8a;           /* pink */
+  --pink-soft: #ffe1ec;
+  --amber: #f4a62a;          /* amber */
+  --amber-soft: #fdeccb;
+  --leaf: #2fae6b;           /* kiwi */
+  --leaf-soft: #d6f0e0;
+  --blue: #3b6bff;           /* blue */
+  --blue-soft: #dde6ff;
+
+  --danger: #e5484d;
+  --success: var(--leaf);
+
+  --shadow-sm: 0 1px 2px rgba(60, 40, 120, 0.07);
+  --shadow-md: 0 6px 18px -6px rgba(60, 40, 120, 0.18);
+  --shadow-lg: 0 24px 60px -18px rgba(60, 40, 120, 0.3);
+  --shadow-pop: 0 10px 30px -8px rgba(60, 40, 120, 0.24);
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-sans: 'Outfit', 'Segoe UI', sans-serif;
+
+  --sidebar-w: 292px;
+  --transition: 200ms cubic-bezier(0.33, 1, 0.68, 1);
+
+  /* Mobile / responsive tokens */
+  --mobile-header-h: 56px;
+  --mobile-touch: 44px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --mobile-pad: 14px;
+  --overlay-bg: rgba(33, 28, 51, 0.38);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+}
+
+.app {
+  height: 100%;
+  overflow: hidden;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ------- Ambient background: violet/cyan blobs + grain ------- */
+.app-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.5;
+}
+
+.blob--violet { width: 46vw; height: 46vw; background: #d9ccff; top: -14vw; right: -8vw; }
+.blob--spark  { width: 40vw; height: 40vw; background: #c8eefb; bottom: -16vw; left: -6vw; }
+.blob--indigo { width: 30vw; height: 30vw; background: #d8d6ff; top: 30vh; left: 34vw; opacity: 0.4; }
+
+.grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+}
+
+/* ------- Scrollbars ------- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+*::-webkit-scrollbar { width: 8px; height: 8px; }
+*::-webkit-scrollbar-thumb { background: var(--line); border-radius: 8px; }
+*::-webkit-scrollbar-thumb:hover { background: var(--ink-faint); }
+*::-webkit-scrollbar-track { background: transparent; }
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  min-height: var(--mobile-touch);
+  min-width: var(--mobile-touch);
+}
+
+input, textarea {
+  font-family: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* ------- Generic keyframes ------- */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-2px); }
+}
+
+@keyframes pop {
+  0% { transform: scale(0.9); opacity: 0; }
+  60% { transform: scale(1.04); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.35); opacity: 0.7; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ============================================================
+   Responsive breakpoint helpers
+   ============================================================ */
+@media (max-width: 860px) {
+  :root {
+    --sidebar-w: 280px;
+    --mobile-pad: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --mobile-pad: 10px;
+  }
+  body {
+    font-size: 15px;
+  }
+}

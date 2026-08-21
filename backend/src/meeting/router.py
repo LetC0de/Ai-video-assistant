@@ -1,8 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+import os
+import uuid
+
+from fastapi import APIRouter, Depends, HTTPException, File, Form, UploadFile
 from sqlalchemy.orm import Session
 
 from src.meeting.model import MeetingModel
-from src.meeting.schema import MeetingCreate, MeetingListResponse, MeetingResponse, ChatRequest
+from src.meeting.schema import MeetingListResponse, MeetingResponse, ChatRequest
 from src.meeting import controller
 from src.user.model import UserModel
 from src.utils.db import get_db
@@ -10,16 +13,33 @@ from src.utils.helpers import is_authenticated
 
 meeting_router = APIRouter(prefix="/meetings", tags=["Meetings"])
 
+DOWNLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "downloads"))
+os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+
 
 @meeting_router.post("/process", response_model=MeetingResponse, status_code=201)
-def process_meeting(
-    body: MeetingCreate,
+async def process_meeting(
     user: UserModel = Depends(is_authenticated),
     db: Session = Depends(get_db),
+    source: str = Form(None),
+    language: str = Form("english"),
+    file: UploadFile = File(None),
 ):
-    """Transcribe + summarize + store a new meeting. Runs once."""
+    """Transcribe + summarize + store a new meeting. Runs once.
+
+    Accepts either a YouTube URL (`source`) or an uploaded video/audio file.
+    """
     try:
-        meeting = controller.process_meeting(user, db, body.source, body.language)
+        if file is not None and file.filename:
+            ext = os.path.splitext(file.filename)[1] or ".tmp"
+            file_id = str(uuid.uuid4())
+            saved_path = os.path.join(DOWNLOAD_DIR, f"{file_id}{ext}")
+            with open(saved_path, "wb") as f:
+                f.write(await file.read())
+            source = saved_path
+        if not source or not source.strip():
+            raise HTTPException(status_code=400, detail="Provide a YouTube URL or upload a file.")
+        meeting = controller.process_meeting(user, db, source.strip(), language)
     except HTTPException:
         raise
     except Exception as e:

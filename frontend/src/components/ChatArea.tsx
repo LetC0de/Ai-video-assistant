@@ -1,0 +1,265 @@
+import { useEffect, useRef, useState } from 'react';
+import type { ChatMessage, Meeting } from '../lib/types';
+import { ChatMessageView, TypingDots } from './ChatMessage';
+import { Composer } from './Composer';
+import { LogoMark, MenuIcon, SparkIcon, PlayIcon, UploadIcon, ChevronIcon } from './Icons';
+
+interface ChatAreaProps {
+  meeting?: Meeting;
+  messages: ChatMessage[];
+  isThinking: boolean;
+  composerValue: string;
+  onComposerChange: (v: string) => void;
+  onSend: () => void;
+  onStop: () => void;
+  onRegenerate: () => void;
+  onRetry: (messageId: string) => void;
+  onNewMeeting: () => void;
+  onUpload: () => void;
+  isMobile: boolean;
+  onToggleSidebar: () => void;
+}
+
+const SUGGESTIONS = [
+  { icon: '✨', text: 'Give me a quick summary of this meeting.' },
+  { icon: '✔', text: 'What are the action items and who owns them?' },
+  { icon: '💡', text: 'List the key decisions made.' },
+  { icon: '❓', text: 'What open questions are still unanswered?' },
+];
+
+export function ChatArea({
+  meeting,
+  messages,
+  isThinking,
+  composerValue,
+  onComposerChange,
+  onSend,
+  onStop,
+  onRegenerate,
+  onRetry,
+  onNewMeeting,
+  onUpload,
+  isMobile,
+  onToggleSidebar,
+}: ChatAreaProps) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const [summaryOpen, setSummaryOpen] = useState(true);
+
+  const hasChat = messages.length > 0;
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+  }, [messages, isThinking]);
+
+  // Reset the summary panel each time a different meeting opens.
+  useEffect(() => {
+    setSummaryOpen(true);
+  }, [meeting?.id]);
+
+  return (
+    <main className="chat">
+      {isMobile && (
+        <div className="chat__mobile-header">
+          <button className="chat__hamburger" onClick={onToggleSidebar} aria-label="Open sidebar">
+            <MenuIcon size={22} />
+          </button>
+
+          <div className="chat__mobile-brand">
+            <span className="chat__mobile-logo"><LogoMark size={22} /></span>
+            <span className="chat__mobile-title">
+              {meeting ? meeting.title : <>Vidya</>}
+            </span>
+            {meeting && (
+              <span className="chat__mobile-sub">
+                {meeting.source && /youtube\.com|youtu\.be/i.test(meeting.source) ? 'YouTube' : 'Uploaded'}
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {!meeting ? (
+        <div className="chat__welcome">
+          <div className="welcome__inner">
+            <div className="welcome__mark"><LogoMark size={46} /></div>
+            <h1 className="welcome__title">
+              Turn any video into a <em>conversation</em>
+            </h1>
+            <p className="welcome__sub">
+              Add a YouTube link or upload a recording. Vidya transcribes it, writes a summary, and
+              answers your questions in plain language.
+            </p>
+            <div className="welcome__cta-row">
+              <button className="welcome__upload" onClick={onNewMeeting}>
+                <PlayIcon size={18} />
+                Add a meeting
+              </button>
+              <button className="welcome__upload welcome__upload--ghost" onClick={onUpload}>
+                <UploadIcon size={18} />
+                Upload file
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : hasChat ? (
+        <div className="chat__thread" ref={scrollRef}>
+          <div className="chat__thread-inner">
+            {meeting.summary && (
+              <SummaryPanel
+                meeting={meeting}
+                open={summaryOpen}
+                onToggle={() => setSummaryOpen((v) => !v)}
+              />
+            )}
+            {messages.map((m, i) => (
+              <ChatMessageView
+                key={m.id}
+                message={m}
+                isLast={i === messages.length - 1}
+                onCopy={(content) => navigator.clipboard?.writeText(content)}
+                onRegenerate={onRegenerate}
+                onRetry={() => onRetry(m.id)}
+                onStreamingDone={() => {}}
+              />
+            ))}
+            {isThinking && (
+              <div className="msg msg--assistant msg--thinking">
+                <div className="msg__meta">
+                  <span className="msg__avatar msg__avatar--ai"><SparkIcon size={15} /></span>
+                  <span className="msg__author">Vidya</span>
+                </div>
+                <div className="msg__body">
+                  <TypingDots />
+                </div>
+              </div>
+            )}
+            <div ref={bottomRef} />
+          </div>
+        </div>
+      ) : (
+        <div className="chat__thread" ref={scrollRef}>
+          <div className="chat__thread-inner">
+            <SummaryPanel meeting={meeting} open={summaryOpen} onToggle={() => setSummaryOpen((v) => !v)} />
+
+            <div className="chat__empty">
+              <p className="chat__empty-title">Ask anything about this meeting</p>
+              <p className="chat__empty-sub">Questions are answered from what was actually said.</p>
+            </div>
+
+            <div className="welcome__suggestions">
+              {SUGGESTIONS.map((s, i) => (
+                <button
+                  key={i}
+                  className="suggestion"
+                  onClick={() => {
+                    onComposerChange(s.text);
+                    onSend();
+                  }}
+                  style={{ animationDelay: `${120 + i * 70}ms` }}
+                >
+                  <span className="suggestion__icon">{s.icon}</span>
+                  <span className="suggestion__text">{s.text}</span>
+                </button>
+              ))}
+            </div>
+
+            {isThinking && (
+              <div className="msg msg--assistant msg--thinking">
+                <div className="msg__meta">
+                  <span className="msg__avatar msg__avatar--ai"><SparkIcon size={15} /></span>
+                  <span className="msg__author">Vidya</span>
+                </div>
+                <div className="msg__body">
+                  <TypingDots />
+                </div>
+              </div>
+            )}
+            <div ref={bottomRef} />
+          </div>
+        </div>
+      )}
+
+      <div className="chat__composer-wrap">
+        <Composer
+          value={composerValue}
+          onChange={onComposerChange}
+          onSubmit={onSend}
+          onStop={onStop}
+          isBusy={isThinking}
+          disabled={!meeting}
+        />
+        <p className="chat__footnote">
+          {meeting
+            ? 'Vidya answers from this meeting — grounded in the transcript.'
+            : 'Add a meeting to start chatting with its content.'}
+        </p>
+      </div>
+    </main>
+  );
+}
+
+// Backend stores insights as Text (often a JSON list serialized to a string).
+// Normalize to a string[] so the summary panel can render bullets either way.
+function toItems(value: string | string[] | undefined): string[] {
+  if (!value) return [];
+  if (Array.isArray(value)) return value.map((v) => v.trim()).filter(Boolean);
+  const text = value.trim();
+  if (!text) return [];
+  // If it looks like a JSON list, parse it; otherwise split on lines/bullets.
+  if (text.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(text);
+      if (Array.isArray(parsed)) return parsed.map((v) => String(v).trim()).filter(Boolean);
+    } catch {
+      /* fall through to line split */
+    }
+  }
+  return text
+    .split(/\r?\n/)
+    .map((l) => l.replace(/^[\s\-–•*]+/, '').trim())
+    .filter(Boolean);
+}
+
+function SummaryPanel({
+  meeting,
+  open,
+  onToggle,
+}: {
+  meeting: Meeting;
+  open: boolean;
+  onToggle: () => void;
+}) {
+  const sections = [
+    { label: 'Action items', items: toItems(meeting.action_items) },
+    { label: 'Key decisions', items: toItems(meeting.key_decisions) },
+    { label: 'Open questions', items: toItems(meeting.open_questions) },
+  ].filter((s) => s.items.length > 0);
+
+  return (
+    <div className={`summary ${open ? 'summary--open' : ''}`}>
+      <button className="summary__head" onClick={onToggle} aria-expanded={open}>
+        <span className="summary__title">
+          <SparkIcon size={15} />
+          Meeting summary
+        </span>
+        <span className="summary__chevron"><ChevronIcon size={16} /></span>
+      </button>
+      {open && (
+        <div className="summary__body">
+          {meeting.summary && <p className="summary__lede">{meeting.summary}</p>}
+          {sections.map((s) => (
+            <div className="summary__section" key={s.label}>
+              <p className="summary__section-label">{s.label}</p>
+              <ul className="summary__list">
+                {s.items.map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
