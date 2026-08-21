@@ -83,7 +83,7 @@
 
 .toast--error {
   background: var(--surface);
-  border: 1.5px solid #f4c2c2;
+  border: 1.5px solid var(--danger-line);
   color: var(--danger);
 }
 

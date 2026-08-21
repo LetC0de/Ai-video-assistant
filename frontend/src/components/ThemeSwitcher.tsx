@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react';
 import './ThemeSwitcher.css';
 
-export type ThemeName = 'ember' | 'verdant' | 'cocoa' | 'nocturne';
+export type ThemeName = 'porcelain' | 'sakura' | 'forest' | 'midnight';
 
 const THEMES: { name: ThemeName; label: string; swatch: string }[] = [
-  { name: 'ember', label: 'Ember', swatch: '#e07a5f' },
-  { name: 'verdant', label: 'Verdant', swatch: '#117c6b' },
-  { name: 'cocoa', label: 'Cocoa', swatch: '#e89b3c' },
-  { name: 'nocturne', label: 'Nocturne', swatch: '#f0b429' },
+  { name: 'porcelain', label: 'Porcelain', swatch: '#4f6bed' },
+  { name: 'sakura', label: 'Sakura', swatch: '#e64980' },
+  { name: 'forest', label: 'Forest', swatch: '#2fb380' },
+  { name: 'midnight', label: 'Midnight', swatch: '#845ef7' },
 ];
 
 const STORAGE_KEY = 'vidya-theme';
 
 function applyTheme(theme: ThemeName) {
   const root = document.documentElement;
-  if (theme === 'ember') root.removeAttribute('data-theme');
+  if (theme === 'porcelain') root.removeAttribute('data-theme');
   else root.setAttribute('data-theme', theme);
 }
 
@@ -42,7 +42,7 @@ export function ThemeSwitcher() {
         onClick={() => setOpen((v) => !v)}
         aria-label="Change color theme"
         title="Change color theme"
-        style={{ background: current === 'nocturne' ? '#2a2723' : '#fff' }}
+        style={{ background: 'var(--surface)' }}
       >
         <span className="theme-switch__dot" style={{ background: THEMES.find((t) => t.name === current)?.swatch }} />
         <span className="theme-switch__label">{THEMES.find((t) => t.name === current)?.label}</span>

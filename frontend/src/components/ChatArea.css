@@ -374,8 +374,8 @@
   color: var(--brand-deep);
 }
 .msg__answer pre {
-  background: #211c33;
-  color: #f5f4fc;
+  background: var(--code-bg, #211c33);
+  color: var(--code-ink, #f5f4fc);
   border-radius: 12px;
   padding: 14px 16px;
   overflow-x: auto;
@@ -410,8 +410,8 @@
 }
 
 .msg--error .msg__answer {
-  border-color: #f4c2c2;
-  background: #fff8f8;
+  border-color: var(--danger-line);
+  background: var(--danger-soft);
 }
 
 .msg__error-note {
@@ -444,7 +444,7 @@
 
 .msg__action--retry {
   color: var(--danger);
-  background: #fdecec;
+  background: var(--danger-soft);
   font-weight: 600;
 }
 

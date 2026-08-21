@@ -67,8 +67,8 @@
   top: 50%;
   transform: translateY(-50%) translateX(-4px);
   white-space: nowrap;
-  background: #2b2724;
-  color: #fff;
+  background: var(--ink);
+  color: var(--surface);
   font-size: 12px;
   font-weight: 500;
   padding: 5px 10px;
@@ -422,12 +422,12 @@
 
 .meeting-item__del:hover {
   color: var(--danger);
-  background: #fdecec;
+  background: var(--danger-soft);
 }
 
 .meeting-item__del--confirm {
   color: var(--danger);
-  background: #fdecec;
+  background: var(--danger-soft);
   width: auto;
   padding: 0 10px;
   gap: 5px;
@@ -528,7 +528,7 @@
 }
 
 .account-logout:hover {
-  background: #fdecec;
+  background: var(--danger-soft);
   color: var(--danger);
 }
 

@@ -166,8 +166,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #fff0ef;
-  border: 1.5px solid #f4c2c2;
+  background: var(--danger-soft);
+  border: 1.5px solid var(--danger-line);
   color: var(--danger);
   border-radius: 12px;
   padding: 10px 14px;
