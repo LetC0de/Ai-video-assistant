@@ -28,6 +28,24 @@ def get_qdrant_client() -> QdrantClient:
     )
 
 
+def get_qdrant_client_options() -> dict:
+    """Connection kwargs for langchain_qdrant, which builds its own client.
+
+    Passing a pre-built QdrantClient via `client=` no longer works with
+    qdrant-client >= 1.12 (the `client=` wrapper kwarg was removed), so we hand
+    over url/api_key/timeout instead and let langchain_qdrant construct it.
+    """
+    if not QDRANT_URL or not QDRANT_API_KEY:
+        raise RuntimeError(
+            "Qdrant Cloud credentials missing. Set QDRANT_URL and QDRANT_API_KEY in .env"
+        )
+    return {
+        "url": QDRANT_URL,
+        "api_key": QDRANT_API_KEY,
+        "timeout": 120.0,
+    }
+
+
 def build_vector_store(transcript: str, collection_name: str) -> QdrantVectorStore:
     """Create (or rebuild) a Qdrant collection for one meeting and store its chunks."""
     print(f"Building Qdrant vector store for collection '{collection_name}'...")
@@ -53,8 +71,8 @@ def build_vector_store(transcript: str, collection_name: str) -> QdrantVectorSto
     vector_store = QdrantVectorStore.from_documents(
         documents=docs,
         embedding=embeddings,
-        client=client,
         collection_name=collection_name,
+        **get_qdrant_client_options(),
     )
 
     print(f"✅ Stored {len(docs)} chunks in Qdrant Cloud collection '{collection_name}'")
