@@ -55,7 +55,7 @@ async function handle<T>(res: Response): Promise<T> {
 // ---------- Meetings ----------
 
 export async function listMeetings(): Promise<MeetingSummary[]> {
-  const res = await fetch(`${BASE}/meetings/`, { headers: authHeaders() });
+  const res = await fetch(`${BASE}/meetings`, { headers: authHeaders() });
   return handle<MeetingSummary[]>(res);
 }
 
