@@ -533,8 +533,54 @@
   margin: 0 0 14px;
 }
 
+/* Markdown styling inside the summary lede + list items, mirroring the chat
+   answer typography so the LLM output reads clean instead of as raw text. */
+.summary__lede p,
+.summary__item p {
+  margin: 0 0 10px;
+}
+.summary__lede p:last-child,
+.summary__item p:last-child {
+  margin-bottom: 0;
+}
+.summary__lede h1, .summary__lede h2, .summary__lede h3,
+.summary__item h1, .summary__item h2, .summary__item h3 {
+  font-family: var(--font-display);
+  color: var(--ink);
+  margin: 12px 0 6px;
+  line-height: 1.25;
+}
+.summary__lede h1, .summary__item h1 { font-size: 18px; }
+.summary__lede h2, .summary__item h2 { font-size: 16px; }
+.summary__lede h3, .summary__item h3 { font-size: 14.5px; }
+.summary__lede ul, .summary__lede ol,
+.summary__item ul, .summary__item ol {
+  margin: 6px 0 10px;
+  padding-left: 20px;
+}
+.summary__lede li, .summary__item li {
+  margin: 3px 0;
+  line-height: 1.55;
+}
+.summary__lede code, .summary__item code {
+  font-family: ui-monospace, 'Cascadia Code', Consolas, monospace;
+  font-size: 12.5px;
+  background: var(--bg-deep);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1px 6px;
+  color: var(--brand-deep);
+}
+.summary__lede strong, .summary__item strong { font-weight: 700; }
+.summary__lede a, .summary__item a {
+  color: var(--brand-deep);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .summary__section {
-  margin-top: 12px;
+  margin-top: 14px;
+  counter-reset: summary-item;
 }
 
 .summary__section-label {
@@ -543,21 +589,49 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   color: var(--brand-deep);
-  margin: 0 0 8px;
+  margin: 0 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* A colored marker dot before each section label, tinted by the meeting hue. */
+.summary__section-label::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--brand);
+  flex-shrink: 0;
 }
 
 .summary__list {
   margin: 0;
-  padding-left: 18px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
 }
 
-.summary__list li {
+.summary__item {
+  position: relative;
+  padding-left: 22px;
   font-size: 14px;
-  line-height: 1.55;
+  line-height: 1.6;
   color: var(--ink);
+}
+
+/* Numbered/bulleted marker derived from the LLM's own item index, so a
+   multi-line action item keeps one marker instead of being shredded. */
+.summary__item::before {
+  counter-increment: summary-item;
+  content: counter(summary-item) ".";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--brand-deep);
 }
 
 /* ---------- Composer ---------- */

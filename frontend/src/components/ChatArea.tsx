@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { ChatMessage, Meeting } from '../lib/types';
 import { ChatMessageView, TypingDots } from './ChatMessage';
 import { Composer } from './Composer';
+import { Markdown } from '../lib/markdown';
 import { LogoMark, MenuIcon, SparkIcon, PlayIcon, UploadIcon, ChevronIcon } from './Icons';
 
 interface ChatAreaProps {
@@ -200,25 +201,43 @@ export function ChatArea({
 }
 
 // Backend stores insights as Text (often a JSON list serialized to a string).
-// Normalize to a string[] so the summary panel can render bullets either way.
-function toItems(value: string | string[] | undefined): string[] {
+// The LLM emits each insight as a numbered/markdown block where ONE logical
+// item can span several lines (e.g. an action item with Owner + Deadline).
+// Group by item boundary so a multi-line item stays intact instead of being
+// shredded into one bullet per line.
+function groupItems(value: string | string[] | undefined): string[] {
   if (!value) return [];
-  if (Array.isArray(value)) return value.map((v) => v.trim()).filter(Boolean);
-  const text = value.trim();
+  let text: string;
+  if (Array.isArray(value)) {
+    text = value.map((v) => String(v).trim()).filter(Boolean).join('\n');
+  } else {
+    text = value.trim();
+  }
   if (!text) return [];
-  // If it looks like a JSON list, parse it; otherwise split on lines/bullets.
+  // If it looks like a JSON list, parse it and recurse.
   if (text.startsWith('[')) {
     try {
       const parsed = JSON.parse(text);
-      if (Array.isArray(parsed)) return parsed.map((v) => String(v).trim()).filter(Boolean);
+      if (Array.isArray(parsed)) return groupItems(parsed);
     } catch {
-      /* fall through to line split */
+      /* fall through to text parsing */
     }
   }
-  return text
-    .split(/\r?\n/)
-    .map((l) => l.replace(/^[\s\-–•*]+/, '').trim())
-    .filter(Boolean);
+  const ITEM = /^\s*(?:\d+[.)]|[-*•])\s+/;
+  const items: string[] = [];
+  let cur: string[] | null = null;
+  for (const raw of text.split(/\r?\n/)) {
+    if (ITEM.test(raw)) {
+      if (cur) items.push(cur.join('\n'));
+      cur = [raw.replace(ITEM, '').trim()];
+    } else if (cur && raw.trim()) {
+      // Continuation line (Owner / Deadline / sub-detail) belongs to the item.
+      cur.push(raw.trim());
+    }
+    // Blank lines between items are skipped.
+  }
+  if (cur) items.push(cur.join('\n'));
+  return items.filter(Boolean);
 }
 
 function SummaryPanel({
@@ -231,9 +250,9 @@ function SummaryPanel({
   onToggle: () => void;
 }) {
   const sections = [
-    { label: 'Action items', items: toItems(meeting.action_items) },
-    { label: 'Key decisions', items: toItems(meeting.key_decisions) },
-    { label: 'Open questions', items: toItems(meeting.open_questions) },
+    { label: 'Action items', items: groupItems(meeting.action_items) },
+    { label: 'Key decisions', items: groupItems(meeting.key_decisions) },
+    { label: 'Open questions', items: groupItems(meeting.open_questions) },
   ].filter((s) => s.items.length > 0);
 
   return (
@@ -247,15 +266,21 @@ function SummaryPanel({
       </button>
       {open && (
         <div className="summary__body">
-          {meeting.summary && <p className="summary__lede">{meeting.summary}</p>}
+          {meeting.summary && (
+            <div className="summary__lede">
+              <Markdown text={meeting.summary} />
+            </div>
+          )}
           {sections.map((s) => (
             <div className="summary__section" key={s.label}>
               <p className="summary__section-label">{s.label}</p>
-              <ul className="summary__list">
+              <div className="summary__list">
                 {s.items.map((item, i) => (
-                  <li key={i}>{item}</li>
+                  <div className="summary__item" key={i}>
+                    <Markdown text={item} />
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           ))}
         </div>
