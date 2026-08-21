@@ -13,7 +13,7 @@ from src.utils.helpers import is_authenticated
 
 meeting_router = APIRouter(prefix="/meetings", tags=["Meetings"])
 
-DOWNLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "downloads"))
+DOWNLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))), "downloads")
 os.makedirs(DOWNLOAD_DIR, exist_ok=True)
 
 
