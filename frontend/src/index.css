@@ -156,64 +156,67 @@
   --code-ink: #fff3e0;
 }
 
-/* ===== THEME: forest — MID-DARK: deep emerald + lime + teal ===== */
+/* ===== THEME: forest — LIGHT: earthy moss + sage + sand + cream ===== */
 [data-theme='forest'] {
-  --bg: #16271d;
-  --bg-deep: #1b2c22;
-  --bg-rgb: 22, 39, 29;
-  --surface: #1e3025;
-  --surface-2: #1e3025;
+  --bg: #fff8ec;             /* cream */
+  --bg-deep: #f1e7d3;        /* deeper cream (sand-tinted) */
+  --bg-rgb: 255, 248, 236;
+  --surface: #fffdf8;
+  --surface-2: #fffdf8;
 
   --ambient: 1;
 
-  --ink: #e8f3ec;
-  --ink-soft: #a9c4b4;
-  --ink-faint: #6f8a7c;
+  --ink: #546b41;            /* deep moss (text + primary) */
+  --ink-soft: #7c8a64;
+  --ink-faint: #a7b08f;
 
-  --line: #284032;
-  --line-soft: #223629;
+  --line: #e8dcc2;
+  --line-soft: #f4ecd9;
 
-  --brand: #2fb380;          /* emerald */
-  --brand-deep: #1f8f63;
-  --brand-glow: rgba(47, 179, 128, 0.26);
-  --brand-rgb: 47, 179, 128;
+  /* The 4 earthy tones: #546B41 moss · #99AD7A sage · #DCCCAC sand · #FFF8EC cream.
+     Moss carries ink + buttons (deep enough for white text); sage/sand/cream drive the
+     ambient blobs, video card and soft washes. */
+  --brand: #546b41;          /* deep moss */
+  --brand-deep: #435636;
+  --brand-glow: rgba(84, 107, 65, 0.22);
+  --brand-rgb: 84, 107, 65;
 
-  --spark: #b2e635;          /* lime (bright gradient partner) */
-  --spark-soft: #33401f;
-  --accent-rgb: 178, 230, 53;
+  --spark: #99ad7a;          /* sage (heading gradient + accent) */
+  --spark-soft: #e6ecd9;
+  --accent-rgb: 153, 173, 122;
 
-  --indigo: #0ca678;         /* teal — gives buttons an emerald→teal sweep */
-  --indigo-soft: #1f4a3a;
-  --pink: #f06595;
-  --pink-soft: #4a2a38;
-  --amber: #f59f00;
-  --amber-soft: #3a3120;
-  --leaf: #2fb380;
-  --leaf-soft: #1f4a36;
-  --leaf-rgb: 47, 179, 128;
-  --blue: #1c7ed6;
-  --blue-soft: #1f3a4a;
+  --indigo: #435636;         /* deepened moss — gives buttons a moss→olive sweep */
+  --indigo-soft: #e2e7d6;
+  --pink: #dcccac;           /* sand */
+  --pink-soft: #f3e8d6;
+  --amber: #fff8ec;          /* cream */
+  --amber-soft: #fffdf3;
+  --leaf: #546b41;           /* moss */
+  --leaf-soft: #e2e7d6;
+  --leaf-rgb: 84, 107, 65;
+  --blue: #99ad7a;           /* sage */
+  --blue-soft: #e6ecd9;
 
-  --danger: #ff6b6b;
-  --danger-soft: #3a1f26;
-  --danger-line: #5a2a32;
-  --success: #2fb380;
+  --danger: #b5573f;         /* warm rust (off-palette, keeps errors legible) */
+  --danger-soft: #f6e6df;
+  --danger-line: #ecc9bd;
+  --success: #5f7a44;         /* moss-deep */
 
-  --theme-shadow-rgb: 0, 0, 0;
-  --overlay-bg: rgba(0, 0, 0, 0.5);
+  --theme-shadow-rgb: 60, 55, 35;
+  --overlay-bg: rgba(84, 107, 65, 0.4);
 
-  --blob-violet: #1f4a36;
-  --blob-spark: #3a5a1f;
-  --blob-indigo: #1a4a44;
+  --blob-violet: #99ad7a;     /* sage */
+  --blob-spark: #dcccac;      /* sand */
+  --blob-indigo: #546b41;     /* moss */
 
-  --video-1: #2fb380;
-  --video-2: #b2e635;
-  --video-3: #0ca678;
-  --video-wash: rgba(0, 0, 0, 0.55);
+  --video-1: #546b41;
+  --video-2: #99ad7a;
+  --video-3: #dcccac;
+  --video-wash: rgba(60, 55, 35, 0.5);
 
-  /* Code block: light-on-dark so it stays legible on the emerald surface */
-  --code-bg: #0f1c14;
-  --code-ink: #c8f0d8;
+  /* Code block: dark on light themes */
+  --code-bg: #2f3a25;
+  --code-ink: #e9efd9;
 }
 
 /* ===== THEME: midnight — DARKEST: electric violet + cyan + blue ===== */
