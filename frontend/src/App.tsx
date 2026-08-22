@@ -13,7 +13,6 @@ import { MeetingModal } from './components/MeetingModal';
 import { AuthScreen } from './components/AuthScreen';
 import { Landing } from './components/Landing';
 import { LogoMark } from './components/Icons';
-import { ThemeSwitcher } from './components/ThemeSwitcher';
 import './App.css';
 import './components/Sidebar.css';
 import './components/ChatArea.css';
@@ -334,8 +333,6 @@ export default function App() {
         onClose={() => setMeetingOpen(false)}
         onProcessed={handleProcessed}
       />
-
-      <ThemeSwitcher />
     </div>
   );
 }

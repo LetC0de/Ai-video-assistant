@@ -1,8 +1,6 @@
 /* ============================================================
-   Vidya — token-driven theming
-   Every color is a CSS variable. The default :root IS theme "forest".
-   Switch themes by setting data-theme on <html>:
-     forest (default) · sakura
+   Vidya — final single theme: "Quill / Sunlit Garden" (Sakura)
+   Single static palette (the blueprint copy). No theme switching.
    Fonts: Fraunces (display serif) + Outfit (humanist sans)
    ============================================================ */
 
@@ -10,99 +8,6 @@
 
 :root {
   /* ===== THEME: forest (default) — LIGHT: earthy moss + sage + sand + cream ===== */
-  --bg: #fbf8f0;             /* pale cream (calm, even) */
-  --bg-deep: #f3ecda;        /* deeper cream (sand-tinted) */
-  --bg-rgb: 251, 248, 240;
-  --surface: #ffffff;
-  --surface-2: #ffffff;
-
-  --ambient: 1;
-
-  /* Neutral warm-dark ink (like the blueprint) so body text stays crisp and
-     readable. The theme green is reserved for brand/accents, not paragraphs. */
-  --ink: #2b2a22;            /* near-black warm (reading text) */
-  --ink-soft: #6c6552;       /* secondary text */
-  --ink-faint: #a59c86;      /* hints / captions */
-
-  --line: #e9e0cc;
-  --line-soft: #f3eddf;
-
-  /* The 4 earthy tones: #546B41 moss · #99AD7A sage · #DCCCAC sand · #FFF8EC cream.
-     Moss carries buttons (deep enough for white text); sage/sand/cream drive the
-     ambient blobs, video card and soft washes. */
-  --brand: #546b41;          /* deep moss (primary action) */
-  --brand-deep: #435636;
-  --brand-glow: rgba(84, 107, 65, 0.2);
-  --brand-rgb: 84, 107, 65;
-
-  --spark: #99ad7a;          /* sage (heading gradient + accent) */
-  --spark-soft: #e8eedd;
-  --accent-rgb: 153, 173, 122;
-
-  --indigo: #435636;         /* deepened moss — gives buttons a moss→olive sweep */
-  --indigo-soft: #e6ecda;
-  --pink: #dcccac;           /* sand */
-  --pink-soft: #f3e8d6;
-  --amber: #fff8ec;          /* cream */
-  --amber-soft: #fffdf3;
-  --leaf: #546b41;           /* moss */
-  --leaf-soft: #e6ecda;
-  --leaf-rgb: 84, 107, 65;
-  --blue: #99ad7a;           /* sage */
-  --blue-soft: #e8eedd;
-
-  --danger: #b5573f;         /* warm rust (off-palette, keeps errors legible) */
-  --danger-soft: #f6e6df;
-  --danger-line: #ecc9bd;
-  --success: #5f7a44;         /* moss-deep */
-
-  --theme-shadow-rgb: 60, 55, 35;
-  --overlay-bg: rgba(43, 40, 32, 0.38);
-
-  /* Pale tints only — so the blobs read as soft light, never muddy */
-  --blob-violet: #d3e0c4;     /* pale sage */
-  --blob-spark: #e9ddc6;      /* pale sand */
-  --blob-indigo: #e6efdb;     /* pale moss-mist */
-
-  --video-1: #546b41;
-  --video-2: #99ad7a;
-  --video-3: #dcccac;
-  --video-wash: rgba(60, 55, 35, 0.5);
-
-  /* Code block: dark on light themes */
-  --code-bg: #2f3a25;
-  --code-ink: #e9efd9;
-
-  --shadow-sm: 0 1px 2px rgba(var(--theme-shadow-rgb), 0.07);
-  --shadow-md: 0 6px 18px -6px rgba(var(--theme-shadow-rgb), 0.18);
-  --shadow-lg: 0 24px 60px -18px rgba(var(--theme-shadow-rgb), 0.3);
-  --shadow-pop: 0 10px 30px -8px rgba(var(--theme-shadow-rgb), 0.24);
-
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 22px;
-  --radius-pill: 999px;
-
-  --font-display: 'Fraunces', Georgia, serif;
-  --font-sans: 'Outfit', 'Segoe UI', sans-serif;
-
-  --sidebar-w: 292px;
-  --transition: 200ms cubic-bezier(0.33, 1, 0.68, 1);
-
-  /* Mobile / responsive tokens */
-  --mobile-header-h: 56px;
-  --mobile-touch: 44px;
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-left: env(safe-area-inset-left, 0px);
-  --safe-right: env(safe-area-inset-right, 0px);
-  --mobile-pad: 14px;
-}
-
-/* ===== THEME: sakura — EXACT COPY of blueprint "Quill / Sunlit Garden" =====
-   Same tokens, same hex, same neutral-ink contrast model. Brand is tangerine
-   coral; accents are sun/sky/berry/grape; blobs are pale coral/sun/sky. */
-[data-theme='sakura'] {
   --bg: #faf6ef;             /* warm cream base */
   --bg-deep: #f4eee1;
   --bg-rgb: 250, 246, 239;
@@ -156,7 +61,7 @@
   --theme-shadow-rgb: 80, 60, 30;
   --overlay-bg: rgba(43, 38, 32, 0.38);
 
-  /* Pale tints only — soft light, never muddy (mirrors blueprint blob colors) */
+  /* Pale tints only — soft light, never muddy (blueprint blob colors) */
   --blob-violet: #ffd9c7;     /* coral */
   --blob-spark: #ffe9b8;      /* sun */
   --blob-indigo: #cfe8fb;     /* sky */
@@ -168,11 +73,32 @@
 
   --code-bg: #2b221c;
   --code-ink: #fbeede;
-}
 
-/* Blueprint uses blob opacity 0.5 / 0.4. Restore that for sakura exactly. */
-[data-theme='sakura'] .blob { opacity: 0.5; }
-[data-theme='sakura'] .blob--indigo { opacity: 0.4; }
+  --shadow-sm: 0 1px 2px rgba(var(--theme-shadow-rgb), 0.07);
+  --shadow-md: 0 6px 18px -6px rgba(var(--theme-shadow-rgb), 0.18);
+  --shadow-lg: 0 24px 60px -18px rgba(var(--theme-shadow-rgb), 0.3);
+  --shadow-pop: 0 10px 30px -8px rgba(var(--theme-shadow-rgb), 0.24);
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-sans: 'Outfit', 'Segoe UI', sans-serif;
+
+  --sidebar-w: 292px;
+  --transition: 200ms cubic-bezier(0.33, 1, 0.68, 1);
+
+  /* Mobile / responsive tokens */
+  --mobile-header-h: 56px;
+  --mobile-touch: 44px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --mobile-pad: 14px;
+}
 
 * {
   box-sizing: border-box;
@@ -225,12 +151,12 @@ html {
   position: absolute;
   border-radius: 50%;
   filter: blur(70px);
-  opacity: calc(0.24 * var(--ambient));
+  opacity: calc(0.5 * var(--ambient));
 }
 
 .blob--violet { width: 46vw; height: 46vw; background: var(--blob-violet); top: -14vw; right: -8vw; }
 .blob--spark  { width: 40vw; height: 40vw; background: var(--blob-spark); bottom: -16vw; left: -6vw; }
-.blob--indigo { width: 30vw; height: 30vw; background: var(--blob-indigo); top: 30vh; left: 34vw; opacity: calc(0.18 * var(--ambient)); }
+.blob--indigo { width: 30vw; height: 30vw; background: var(--blob-indigo); top: 30vh; left: 34vw; opacity: calc(0.4 * var(--ambient)); }
 
 .grain {
   position: absolute;
