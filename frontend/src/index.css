@@ -1,8 +1,8 @@
 /* ============================================================
    Vidya — token-driven theming
-   Every color is a CSS variable. The default :root IS theme "ember".
+   Every color is a CSS variable. The default :root IS theme "porcelain".
    Switch themes by setting data-theme on <html>:
-     ember · verdant · cocoa · nocturne
+     porcelain · sakura · forest
    Fonts: Fraunces (display serif) + Outfit (humanist sans)
    ============================================================ */
 
@@ -220,65 +220,6 @@
   /* Code block: dark on light themes */
   --code-bg: #2f3a25;
   --code-ink: #e9efd9;
-}
-
-/* ===== THEME: midnight — DARK: warm terracotta-brown + rust + olive + gold ===== */
-[data-theme='midnight'] {
-  --bg: #1c120b;             /* deepest brown (from #622B14) */
-  --bg-deep: #251710;
-  --bg-rgb: 28, 18, 11;
-  --surface: #2b1c12;
-  --surface-2: #2b1c12;
-
-  --ambient: 1;
-
-  --ink: #f0e6d2;            /* pale gold-cream text */
-  --ink-soft: #c2ad8e;
-  --ink-faint: #8c7a5e;
-
-  --line: #3e2a1c;
-  --line-soft: #34241257;
-
-  --brand: #995f2f;          /* rust (buttons — deep enough for white text) */
-  --brand-deep: #7d4a22;
-  --brand-glow: rgba(153, 95, 47, 0.28);
-  --brand-rgb: 153, 95, 47;
-
-  --spark: #e4d6a9;          /* pale gold (heading gradient + accent) */
-  --spark-soft: #3a3120;
-  --accent-rgb: 228, 214, 169;
-
-  --indigo: #622b14;         /* deep terracotta-brown — gives buttons a rust→brown sweep */
-  --indigo-soft: #3a2417;
-  --pink: #978f66;           /* olive-khaki */
-  --pink-soft: #2e2b1d;
-  --amber: #e4d6a9;          /* pale gold */
-  --amber-soft: #3a3120;
-  --leaf: #978f66;           /* olive-khaki */
-  --leaf-soft: #2e2b1d;
-  --leaf-rgb: 151, 143, 102;
-  --blue: #995f2f;           /* rust */
-  --blue-soft: #3a2417;
-
-  --danger: #c2603f;         /* rust-bright (errors stay in-palette) */
-  --danger-soft: #3a2114;
-  --danger-line: #5a3320;
-  --success: #978f66;         /* olive-khaki */
-
-  --theme-shadow-rgb: 0, 0, 0;
-  --overlay-bg: rgba(28, 18, 11, 0.6);
-
-  --blob-violet: #622b14;     /* terracotta-brown */
-  --blob-spark: #995f2f;      /* rust */
-  --blob-indigo: #e4d6a9;     /* pale gold */
-
-  --video-1: #622b14;
-  --video-2: #995f2f;
-  --video-3: #e4d6a9;
-  --video-wash: rgba(0, 0, 0, 0.6);
-
-  --code-bg: #140c07;
-  --code-ink: #e4d6a9;
 }
 
 * {
