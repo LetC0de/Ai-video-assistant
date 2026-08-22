@@ -1,26 +1,25 @@
 import { useEffect, useState } from 'react';
 import './ThemeSwitcher.css';
 
-export type ThemeName = 'porcelain' | 'sakura' | 'forest';
+export type ThemeName = 'forest' | 'sakura';
 
 const THEMES: { name: ThemeName; label: string; swatch: string }[] = [
-  { name: 'porcelain', label: 'Porcelain', swatch: '#30afff' },
-  { name: 'sakura', label: 'Sakura', swatch: '#ffbe91' },
   { name: 'forest', label: 'Forest', swatch: '#546b41' },
+  { name: 'sakura', label: 'Sakura', swatch: '#ffbe91' },
 ];
 
 const STORAGE_KEY = 'vidya-theme';
 
 function applyTheme(theme: ThemeName) {
   const root = document.documentElement;
-  if (theme === 'porcelain') root.removeAttribute('data-theme');
+  if (theme === 'forest') root.removeAttribute('data-theme');
   else root.setAttribute('data-theme', theme);
 }
 
 export function ThemeSwitcher() {
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState<ThemeName>(
-    () => (localStorage.getItem(STORAGE_KEY) as ThemeName) || 'porcelain'
+    () => (localStorage.getItem(STORAGE_KEY) as ThemeName) || 'forest'
   );
 
   useEffect(() => {
