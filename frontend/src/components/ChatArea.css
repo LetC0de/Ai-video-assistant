@@ -15,9 +15,9 @@
   gap: 10px;
   height: calc(var(--mobile-header-h) + var(--safe-top));
   padding: var(--safe-top) var(--mobile-pad) 0;
-  background: rgba(var(--bg-rgb), 0.85);
-  backdrop-filter: blur(18px) saturate(1.1);
-  -webkit-backdrop-filter: blur(18px) saturate(1.1);
+  background: rgba(var(--bg-rgb), 0.94);
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
   border-bottom: 1px solid var(--line);
   z-index: 5;
   flex-shrink: 0;
@@ -191,7 +191,7 @@
   gap: 14px;
   padding: 18px 20px;
   text-align: left;
-  background: rgba(255, 255, 255, 0.78);
+  background: var(--surface);
   border: 1.5px solid var(--line);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
@@ -337,10 +337,10 @@
 
 .msg__answer {
   background: var(--surface);
-  border: 1.5px solid var(--line-soft);
+  border: 1.5px solid var(--line);
   border-radius: 18px 18px 18px 4px;
   padding: 16px 20px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
   font-size: 14.5px;
   line-height: 1.65;
   color: var(--ink);
@@ -456,10 +456,10 @@
 /* ---------- Typing indicator ---------- */
 .msg--thinking .msg__body {
   background: var(--surface);
-  border: 1.5px solid var(--line-soft);
+  border: 1.5px solid var(--line);
   border-radius: 18px 18px 18px 4px;
   padding: 15px 20px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
   min-width: 90px;
 }
 

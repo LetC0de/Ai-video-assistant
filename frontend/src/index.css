@@ -212,17 +212,17 @@ html {
   position: absolute;
   border-radius: 50%;
   filter: blur(70px);
-  opacity: calc(0.4 * var(--ambient));
+  opacity: calc(0.24 * var(--ambient));
 }
 
 .blob--violet { width: 46vw; height: 46vw; background: var(--blob-violet); top: -14vw; right: -8vw; }
 .blob--spark  { width: 40vw; height: 40vw; background: var(--blob-spark); bottom: -16vw; left: -6vw; }
-.blob--indigo { width: 30vw; height: 30vw; background: var(--blob-indigo); top: 30vh; left: 34vw; opacity: calc(0.3 * var(--ambient)); }
+.blob--indigo { width: 30vw; height: 30vw; background: var(--blob-indigo); top: 30vh; left: 34vw; opacity: calc(0.18 * var(--ambient)); }
 
 .grain {
   position: absolute;
   inset: 0;
-  opacity: 0.5;
+  opacity: 0.14;
   mix-blend-mode: soft-light;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 240px 240px;
