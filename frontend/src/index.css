@@ -10,44 +10,46 @@
 
 :root {
   /* ===== THEME: forest (default) — LIGHT: earthy moss + sage + sand + cream ===== */
-  --bg: #fff8ec;             /* cream */
-  --bg-deep: #f1e7d3;        /* deeper cream (sand-tinted) */
-  --bg-rgb: 255, 248, 236;
-  --surface: #fffdf8;
-  --surface-2: #fffdf8;
+  --bg: #fbf8f0;             /* pale cream (calm, even) */
+  --bg-deep: #f3ecda;        /* deeper cream (sand-tinted) */
+  --bg-rgb: 251, 248, 240;
+  --surface: #ffffff;
+  --surface-2: #ffffff;
 
   --ambient: 1;
 
-  --ink: #546b41;            /* deep moss (text + primary) */
-  --ink-soft: #7c8a64;
-  --ink-faint: #a7b08f;
+  /* Neutral warm-dark ink (like the blueprint) so body text stays crisp and
+     readable. The theme green is reserved for brand/accents, not paragraphs. */
+  --ink: #2b2a22;            /* near-black warm (reading text) */
+  --ink-soft: #6c6552;       /* secondary text */
+  --ink-faint: #a59c86;      /* hints / captions */
 
-  --line: #e8dcc2;
-  --line-soft: #f4ecd9;
+  --line: #e9e0cc;
+  --line-soft: #f3eddf;
 
   /* The 4 earthy tones: #546B41 moss · #99AD7A sage · #DCCCAC sand · #FFF8EC cream.
-     Moss carries ink + buttons (deep enough for white text); sage/sand/cream drive the
+     Moss carries buttons (deep enough for white text); sage/sand/cream drive the
      ambient blobs, video card and soft washes. */
-  --brand: #546b41;          /* deep moss */
+  --brand: #546b41;          /* deep moss (primary action) */
   --brand-deep: #435636;
-  --brand-glow: rgba(84, 107, 65, 0.22);
+  --brand-glow: rgba(84, 107, 65, 0.2);
   --brand-rgb: 84, 107, 65;
 
   --spark: #99ad7a;          /* sage (heading gradient + accent) */
-  --spark-soft: #e6ecd9;
+  --spark-soft: #e8eedd;
   --accent-rgb: 153, 173, 122;
 
   --indigo: #435636;         /* deepened moss — gives buttons a moss→olive sweep */
-  --indigo-soft: #e2e7d6;
+  --indigo-soft: #e6ecda;
   --pink: #dcccac;           /* sand */
   --pink-soft: #f3e8d6;
   --amber: #fff8ec;          /* cream */
   --amber-soft: #fffdf3;
   --leaf: #546b41;           /* moss */
-  --leaf-soft: #e2e7d6;
+  --leaf-soft: #e6ecda;
   --leaf-rgb: 84, 107, 65;
   --blue: #99ad7a;           /* sage */
-  --blue-soft: #e6ecd9;
+  --blue-soft: #e8eedd;
 
   --danger: #b5573f;         /* warm rust (off-palette, keeps errors legible) */
   --danger-soft: #f6e6df;
@@ -55,11 +57,12 @@
   --success: #5f7a44;         /* moss-deep */
 
   --theme-shadow-rgb: 60, 55, 35;
-  --overlay-bg: rgba(84, 107, 65, 0.4);
+  --overlay-bg: rgba(43, 40, 32, 0.38);
 
-  --blob-violet: #99ad7a;     /* sage */
-  --blob-spark: #dcccac;      /* sand */
-  --blob-indigo: #546b41;     /* moss */
+  /* Pale tints only — so the blobs read as soft light, never muddy */
+  --blob-violet: #d3e0c4;     /* pale sage */
+  --blob-spark: #e9ddc6;      /* pale sand */
+  --blob-indigo: #e6efdb;     /* pale moss-mist */
 
   --video-1: #546b41;
   --video-2: #99ad7a;
@@ -193,10 +196,10 @@ html {
   scroll-behavior: smooth;
 }
 
-/* ------- Ambient background: violet/spark/indigo blobs + grain -------
-   The blobs only render for "fancy" themes (--ambient: 1). Simple/clean
-   themes (--ambient: 0) collapse blob opacity to 0 so the background stays
-   flat and quiet. */
+/* ------- Ambient background: soft pastel blobs + grain -------
+   Static (no drift) for a calm, readable surface — the blobs are pale tints
+   so nothing muddy shows through the translucent panels. --ambient: 0 (if a
+   theme ever wanted it) collapses blob opacity to 0 for a flat background. */
 .app-bg {
   position: fixed;
   inset: 0;
@@ -209,19 +212,12 @@ html {
   position: absolute;
   border-radius: 50%;
   filter: blur(70px);
-  opacity: calc(0.5 * var(--ambient));
-  animation: aurora 26s ease-in-out infinite;
+  opacity: calc(0.4 * var(--ambient));
 }
 
 .blob--violet { width: 46vw; height: 46vw; background: var(--blob-violet); top: -14vw; right: -8vw; }
-.blob--spark  { width: 40vw; height: 40vw; background: var(--blob-spark); bottom: -16vw; left: -6vw; animation-delay: -8s; }
-.blob--indigo { width: 30vw; height: 30vw; background: var(--blob-indigo); top: 30vh; left: 34vw; opacity: calc(0.4 * var(--ambient)); animation-delay: -16s; }
-
-@keyframes aurora {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33%      { transform: translate(3vw, 2vh) scale(1.08); }
-  66%      { transform: translate(-2vw, -3vh) scale(0.95); }
-}
+.blob--spark  { width: 40vw; height: 40vw; background: var(--blob-spark); bottom: -16vw; left: -6vw; }
+.blob--indigo { width: 30vw; height: 30vw; background: var(--blob-indigo); top: 30vh; left: 34vw; opacity: calc(0.3 * var(--ambient)); }
 
 .grain {
   position: absolute;
