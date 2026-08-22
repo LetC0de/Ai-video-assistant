@@ -9,42 +9,45 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500;1,9..144,600;1,9..144,700&family=Outfit:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* ===== THEME: porcelain (default) — LIGHTEST: cool ice + indigo → violet ===== */
-  --bg: #f4f7fb;
-  --bg-deep: #e6ecf5;
-  --bg-rgb: 244, 247, 251;
+  /* ===== THEME: porcelain (default) — LIGHT: sky + aqua + mint ===== */
+  --bg: #eefaff;             /* palest sky tint */
+  --bg-deep: #d9f3fb;
+  --bg-rgb: 238, 250, 255;
   --surface: #ffffff;
   --surface-2: #ffffff;
 
   /* 0 = no ambient blobs (flat); 1 = full ambient aurora */
   --ambient: 1;
 
-  --ink: #1b2333;
-  --ink-soft: #5a6479;
-  --ink-faint: #97a1b5;
+  --ink: #123247;            /* deep navy from the sky tone (soft, not black) */
+  --ink-soft: #4a6e85;
+  --ink-faint: #8aa9bd;
 
-  --line: #dde4ef;
-  --line-soft: #eef2f8;
+  --line: #d4ecf5;
+  --line-soft: #eaf6fb;
 
-  --brand: #4f6bed;          /* indigo */
-  --brand-deep: #344fd6;
-  --brand-glow: rgba(79, 107, 237, 0.22);
-  --brand-rgb: 79, 107, 237;
+  /* The 4 cool tones: #30AFFF sky · #92EEFF aqua · #D8FFC5 mint · #C4F7CA mint-2.
+     Sky carries buttons (deep enough for white text); aqua/mint drive the ambient
+     blobs, video card and soft washes. */
+  --brand: #30afff;          /* sky */
+  --brand-deep: #1f93dd;
+  --brand-glow: rgba(48, 175, 255, 0.24);
+  --brand-rgb: 48, 175, 255;
 
-  --spark: #22b8cf;          /* cyan (gradient partner) */
-  --spark-soft: #d3f3f8;
-  --accent-rgb: 34, 184, 207;
+  --spark: #92eeff;          /* aqua (heading gradient + accent) */
+  --spark-soft: #d6f7fd;
+  --accent-rgb: 146, 238, 255;
 
-  --indigo: #7c5cff;         /* violet — gives buttons a deep indigo→violet sweep */
-  --indigo-soft: #e6e2ff;
-  --pink: #f06595;
-  --pink-soft: #fce0ea;
-  --amber: #f59f00;
-  --amber-soft: #fdeccb;
-  --leaf: #2f9e44;           /* green */
+  --indigo: #1f93dd;         /* deepened sky — gives buttons a sky→azure sweep */
+  --indigo-soft: #d6f7fd;
+  --pink: #c4f7ca;           /* mint-2 */
+  --pink-soft: #e4fbe7;
+  --amber: #d8ffc5;          /* mint */
+  --amber-soft: #ecfde3;
+  --leaf: #2f9e44;           /* green (semantic, kept legible) */
   --leaf-soft: #dcefe1;
   --leaf-rgb: 47, 158, 68;
-  --blue: #1c7ed6;           /* sky */
+  --blue: #1c7ed6;           /* sky-deep */
   --blue-soft: #d8eaf8;
 
   --danger: #e03131;
@@ -52,21 +55,21 @@
   --danger-line: #f4c2c2;
   --success: #2f9e44;
 
-  --theme-shadow-rgb: 35, 45, 80;
-  --overlay-bg: rgba(27, 35, 51, 0.4);
+  --theme-shadow-rgb: 30, 70, 95;
+  --overlay-bg: rgba(18, 50, 71, 0.4);
 
-  --blob-violet: #d8e0ff;
-  --blob-spark: #d3f3f8;
-  --blob-indigo: #e0e6ff;
+  --blob-violet: #30afff;     /* sky */
+  --blob-spark: #92eeff;      /* aqua */
+  --blob-indigo: #c4f7ca;     /* mint-2 */
 
-  --video-1: #4f6bed;
-  --video-2: #22b8cf;
-  --video-3: #7c5cff;
-  --video-wash: rgba(20, 28, 55, 0.55);
+  --video-1: #30afff;
+  --video-2: #92eeff;
+  --video-3: #c4f7ca;
+  --video-wash: rgba(18, 50, 71, 0.5);
 
   /* Code block: dark on light themes */
-  --code-bg: #1c2333;
-  --code-ink: #e8edff;
+  --code-bg: #14304a;
+  --code-ink: #e2f6ff;
 
   --shadow-sm: 0 1px 2px rgba(var(--theme-shadow-rgb), 0.07);
   --shadow-md: 0 6px 18px -6px rgba(var(--theme-shadow-rgb), 0.18);
@@ -219,63 +222,63 @@
   --code-ink: #e9efd9;
 }
 
-/* ===== THEME: midnight — DARKEST: electric violet + cyan + blue ===== */
+/* ===== THEME: midnight — DARK: warm terracotta-brown + rust + olive + gold ===== */
 [data-theme='midnight'] {
-  --bg: #14122b;
-  --bg-deep: #1d1a3a;
-  --bg-rgb: 20, 18, 43;
-  --surface: #211e40;
-  --surface-2: #211e40;
+  --bg: #1c120b;             /* deepest brown (from #622B14) */
+  --bg-deep: #251710;
+  --bg-rgb: 28, 18, 11;
+  --surface: #2b1c12;
+  --surface-2: #2b1c12;
 
   --ambient: 1;
 
-  --ink: #ece9ff;
-  --ink-soft: #b3aed8;
-  --ink-faint: #79719e;
+  --ink: #f0e6d2;            /* pale gold-cream text */
+  --ink-soft: #c2ad8e;
+  --ink-faint: #8c7a5e;
 
-  --line: #322e57;
-  --line-soft: #2a2649;
+  --line: #3e2a1c;
+  --line-soft: #34241257;
 
-  --brand: #845ef7;          /* electric violet */
-  --brand-deep: #7048e8;
-  --brand-glow: rgba(132, 94, 247, 0.3);
-  --brand-rgb: 132, 94, 247;
+  --brand: #995f2f;          /* rust (buttons — deep enough for white text) */
+  --brand-deep: #7d4a22;
+  --brand-glow: rgba(153, 95, 47, 0.28);
+  --brand-rgb: 153, 95, 47;
 
-  --spark: #22d3ee;          /* cyan (glowing gradient partner) */
-  --spark-soft: #1a4a5a;
-  --accent-rgb: 34, 211, 238;
+  --spark: #e4d6a9;          /* pale gold (heading gradient + accent) */
+  --spark-soft: #3a3120;
+  --accent-rgb: 228, 214, 169;
 
-  --indigo: #5c7cfa;         /* blue — gives buttons a violet→blue glow sweep */
-  --indigo-soft: #2a2a6b;
-  --pink: #f06595;
-  --pink-soft: #4a2a38;
-  --amber: #f59f00;
+  --indigo: #622b14;         /* deep terracotta-brown — gives buttons a rust→brown sweep */
+  --indigo-soft: #3a2417;
+  --pink: #978f66;           /* olive-khaki */
+  --pink-soft: #2e2b1d;
+  --amber: #e4d6a9;          /* pale gold */
   --amber-soft: #3a3120;
-  --leaf: #2fb380;
-  --leaf-soft: #1f4a36;
-  --leaf-rgb: 47, 179, 128;
-  --blue: #5c7cfa;
-  --blue-soft: #2a2a6b;
+  --leaf: #978f66;           /* olive-khaki */
+  --leaf-soft: #2e2b1d;
+  --leaf-rgb: 151, 143, 102;
+  --blue: #995f2f;           /* rust */
+  --blue-soft: #3a2417;
 
-  --danger: #ff6b6b;
-  --danger-soft: #3a1f26;
-  --danger-line: #5a2a32;
-  --success: #2fb380;
+  --danger: #c2603f;         /* rust-bright (errors stay in-palette) */
+  --danger-soft: #3a2114;
+  --danger-line: #5a3320;
+  --success: #978f66;         /* olive-khaki */
 
   --theme-shadow-rgb: 0, 0, 0;
-  --overlay-bg: rgba(0, 0, 0, 0.55);
+  --overlay-bg: rgba(28, 18, 11, 0.6);
 
-  --blob-violet: #3a2a6b;
-  --blob-spark: #1a4a5a;
-  --blob-indigo: #2a2a6b;
+  --blob-violet: #622b14;     /* terracotta-brown */
+  --blob-spark: #995f2f;      /* rust */
+  --blob-indigo: #e4d6a9;     /* pale gold */
 
-  --video-1: #845ef7;
-  --video-2: #22d3ee;
-  --video-3: #5c7cfa;
-  --video-wash: rgba(0, 0, 0, 0.55);
+  --video-1: #622b14;
+  --video-2: #995f2f;
+  --video-3: #e4d6a9;
+  --video-wash: rgba(0, 0, 0, 0.6);
 
-  --code-bg: #0c0a1e;
-  --code-ink: #d6d0ff;
+  --code-bg: #140c07;
+  --code-ink: #e4d6a9;
 }
 
 * {
