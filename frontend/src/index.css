@@ -94,63 +94,66 @@
   --mobile-pad: 14px;
 }
 
-/* ===== THEME: sakura — LIGHT: warm blush + rose → plum ===== */
+/* ===== THEME: sakura — LIGHT: soft apricot / butter / cream / baby-blue ===== */
 [data-theme='sakura'] {
-  --bg: #fdf5f8;
-  --bg-deep: #f8e8f0;
-  --bg-rgb: 253, 245, 248;
-  --surface: #fffafc;
-  --surface-2: #fffafc;
+  --bg: #fdf6ec;             /* warm cream from the pastel set */
+  --bg-deep: #f9ebd6;
+  --bg-rgb: 253, 246, 236;
+  --surface: #fffdf8;
+  --surface-2: #fffdf8;
 
   --ambient: 1;
 
-  --ink: #3a2530;
-  --ink-soft: #7a5b6b;
-  --ink-faint: #b38ea1;
+  --ink: #5e4a3c;            /* soft warm brown (gentle, not black) */
+  --ink-soft: #977a64;
+  --ink-faint: #c4a88f;
 
-  --line: #f3e0e9;
-  --line-soft: #faeef4;
+  --line: #f4e6d2;
+  --line-soft: #fbf2e4;
 
-  --brand: #e64980;          /* rose */
-  --brand-deep: #c2256b;
-  --brand-glow: rgba(230, 73, 128, 0.22);
-  --brand-rgb: 230, 73, 128;
+  /* The 4 pastels: #FFBE91 apricot · #FFDDB0 butter · #FFFCE1 cream · #CFEBFF blue.
+     Brand/indigo are the apricot+butter deepened just enough for white-text buttons;
+     the pure pastels carry the blobs, avatars, video card and soft washes. */
+  --brand: #e8965f;          /* deepened #FFBE91 apricot */
+  --brand-deep: #cf7f48;
+  --brand-glow: rgba(255, 190, 145, 0.42);
+  --brand-rgb: 232, 150, 95;
 
-  --spark: #ff8787;          /* coral (gradient partner) */
-  --spark-soft: #ffe0e0;
-  --accent-rgb: 255, 135, 135;
+  --spark: #ffbe91;          /* apricot pastel (heading gradient + spark) */
+  --spark-soft: #ffe4d2;
+  --accent-rgb: 255, 190, 145;
 
-  --indigo: #9c36b5;         /* plum — gives buttons a rose→plum sweep */
-  --indigo-soft: #f3e0f5;
-  --pink: #e64980;
-  --pink-soft: #fce0ea;
-  --amber: #f59f00;
-  --amber-soft: #fdeccb;
-  --leaf: #2f9e44;
-  --leaf-soft: #dcefe1;
-  --leaf-rgb: 47, 158, 68;
-  --blue: #1c7ed6;
-  --blue-soft: #d8eaf8;
+  --indigo: #e0a85f;         /* deepened #FFDDB0 butter — warm button sweep */
+  --indigo-soft: #ffedd2;     /* butter pastel wash */
+  --pink: #ffddb0;           /* butter pastel */
+  --pink-soft: #fff1dc;
+  --amber: #fffce1;          /* cream pastel */
+  --amber-soft: #fffcec;
+  --leaf: #cfebff;           /* baby-blue pastel */
+  --leaf-soft: #e6f4ff;
+  --leaf-rgb: 207, 235, 255;
+  --blue: #cfebff;           /* baby-blue (accent reuse) */
+  --blue-soft: #e6f4ff;
 
-  --danger: #e03131;
-  --danger-soft: #fdecec;
-  --danger-line: #f4c2c2;
-  --success: #2f9e44;
+  --danger: #e0684a;
+  --danger-soft: #fdeae2;
+  --danger-line: #f3c8b8;
+  --success: #7fae6a;         /* soft sage (off-palette, keeps "success" readable) */
 
-  --theme-shadow-rgb: 80, 40, 60;
-  --overlay-bg: rgba(58, 37, 48, 0.4);
+  --theme-shadow-rgb: 95, 70, 45;
+  --overlay-bg: rgba(94, 74, 60, 0.4);
 
-  --blob-violet: #f6d3e6;
-  --blob-spark: #ffd6e0;
-  --blob-indigo: #ecd0f0;
+  --blob-violet: #ffbe91;     /* apricot */
+  --blob-spark: #ffddb0;      /* butter */
+  --blob-indigo: #cfebff;     /* baby blue */
 
-  --video-1: #e64980;
-  --video-2: #ff8787;
-  --video-3: #9c36b5;
-  --video-wash: rgba(58, 30, 50, 0.55);
+  --video-1: #ffbe91;
+  --video-2: #ffddb0;
+  --video-3: #cfebff;
+  --video-wash: rgba(85, 65, 45, 0.5);
 
-  --code-bg: #2a1c26;
-  --code-ink: #ffe8f1;
+  --code-bg: #3a2e22;
+  --code-ink: #fff3e0;
 }
 
 /* ===== THEME: forest — MID-DARK: deep emerald + lime + teal ===== */

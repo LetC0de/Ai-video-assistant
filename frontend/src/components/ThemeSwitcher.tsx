@@ -5,7 +5,7 @@ export type ThemeName = 'porcelain' | 'sakura' | 'forest' | 'midnight';
 
 const THEMES: { name: ThemeName; label: string; swatch: string }[] = [
   { name: 'porcelain', label: 'Porcelain', swatch: '#4f6bed' },
-  { name: 'sakura', label: 'Sakura', swatch: '#e64980' },
+  { name: 'sakura', label: 'Sakura', swatch: '#ffbe91' },
   { name: 'forest', label: 'Forest', swatch: '#2fb380' },
   { name: 'midnight', label: 'Midnight', swatch: '#845ef7' },
 ];
