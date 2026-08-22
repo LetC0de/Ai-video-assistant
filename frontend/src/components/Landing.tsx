@@ -13,12 +13,12 @@ const FEATURES = [
   {
     icon: 'chat',
     title: 'Chat with the transcript',
-    body: 'Ask anything about a video or meeting in plain language and Vidya answers from what was actually said — no scrubbing for the moment.',
+    body: 'Ask anything about a video or meeting in plain language and Vidora AI answers from what was actually said — no scrubbing for the moment.',
   },
   {
     icon: 'bolt',
     title: 'Transcribed in seconds',
-    body: 'Paste a YouTube link or drop in a recording and Vidya transcribes, summarizes, and indexes it automatically. Start asking moments later.',
+    body: 'Paste a YouTube link or drop in a recording and Vidora AI transcribes, summarizes, and indexes it automatically. Start asking moments later.',
   },
   {
     icon: 'lock',
@@ -31,12 +31,12 @@ const STEPS = [
   {
     icon: 'upload',
     title: 'Add a source',
-    body: 'Paste a YouTube URL or upload a video / audio file. Vidya pulls the transcript and reads it for you.',
+    body: 'Paste a YouTube URL or upload a video / audio file. Vidora AI pulls the transcript and reads it for you.',
   },
   {
     icon: 'process',
     title: 'Summarize',
-    body: 'Vidya turns the transcript into a clean summary, with action items, decisions, and open questions.',
+    body: 'Vidora AI turns the transcript into a clean summary, with action items, decisions, and open questions.',
   },
   {
     icon: 'answer',
@@ -45,7 +45,7 @@ const STEPS = [
   },
 ];
 
-// Source types Vidya accepts, each with a recognizable accent color.
+// Source types Vidora AI accepts, each with a recognizable accent color.
 const FORMATS = [
   { label: 'YouTube', color: '#e5484d' },
   { label: 'MP4', color: '#e07a5f' },
@@ -143,9 +143,9 @@ export function Landing({ onLogin, onRegister }: LandingProps) {
       {/* ---------- Nav ---------- */}
       <header className="landing__nav">
         <div className="landing__nav-inner">
-          <a className="landing__brand" href="#top" aria-label="Vidya home">
+          <a className="landing__brand" href="#top" aria-label="Vidora AI home">
             <LogoMark size={26} />
-            <span className="landing__brand-name">Vidya</span>
+            <span className="landing__brand-name">Vidora AI</span>
           </a>
 
           <nav className="landing__nav-links" aria-label="Primary">
@@ -177,7 +177,7 @@ export function Landing({ onLogin, onRegister }: LandingProps) {
               </h1>
 
               <p className="hero__sub">
-                Vidya is a retrieval-augmented assistant for video and audio: drop in a YouTube link
+                Vidora AI is a retrieval-augmented assistant for video and audio: drop in a YouTube link
                 or a recording, and it transcribes, summarizes, and answers questions in plain
                 language — straight from what was said.
               </p>
@@ -198,7 +198,7 @@ export function Landing({ onLogin, onRegister }: LandingProps) {
 
             {/* Product example with a typewriter effect. A video card that
                 "plays", a user question, and the typed answer. */}
-            <figure className="hero__mock" aria-label="Vidya example: a question and its answer from a video.">
+            <figure className="hero__mock" aria-label="Vidora AI example: a question and its answer from a video.">
               <div className="mock__bar">
                 <div className="mock__tabs">
                   <span className="mock__tab mock__tab--active">
@@ -266,7 +266,7 @@ export function Landing({ onLogin, onRegister }: LandingProps) {
             <p className="eyebrow">Features</p>
             <h2 className="landing__title">Understand any video — without rewatching it.</h2>
             <p className="landing__lede">
-              Vidya is built on retrieval-augmented generation: your recordings stay yours, and every
+              Vidora AI is built on retrieval-augmented generation: your recordings stay yours, and every
               answer is drawn from the words actually spoken in the source.
             </p>
           </div>
@@ -306,7 +306,7 @@ export function Landing({ onLogin, onRegister }: LandingProps) {
         {/* ---------- Final CTA ---------- */}
         <section className="landing__cta">
           <div className="landing__cta-inner" data-reveal>
-            <p className="eyebrow landing__cta-eyebrow">Vidya</p>
+            <p className="eyebrow landing__cta-eyebrow">Vidora AI</p>
             <h2 className="landing__cta-title">Start chatting with your videos.</h2>
             <p className="landing__cta-sub">Create a free account and get answers from any meeting in under a minute.</p>
             <button className="btn btn--primary landing__cta-btn" type="button" onClick={onRegister}>
@@ -322,7 +322,7 @@ export function Landing({ onLogin, onRegister }: LandingProps) {
 
       {/* ---------- Footer ---------- */}
       <footer className="landing__foot">
-        <span className="landing__foot-brand"><LogoMark size={20} /> Vidya</span>
+        <span className="landing__foot-brand"><LogoMark size={20} /> Vidora AI</span>
         <span className="landing__foot-tag">Chat with any video.</span>
       </footer>
     </div>

@@ -59,10 +59,10 @@ export function Sidebar({
   return (
     <aside className={`sidebar ${collapsed ? 'sidebar--collapsed' : ''}`}>
       <div className="sidebar__head">
-        <button className="brand" onClick={onClose} aria-label="Vidya home">
+        <button className="brand" onClick={onClose} aria-label="Vidora AI home">
           <span className="brand__mark"><LogoMark size={30} /></span>
           <span className="brand__text">
-            <span className="brand__name">Vidya</span>
+            <span className="brand__name">Vidora AI</span>
             <span className="brand__tag">chat with any video</span>
           </span>
         </button>

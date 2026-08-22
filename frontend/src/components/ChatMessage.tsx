@@ -36,7 +36,7 @@ export function ChatMessageView({
         <span className={`msg__avatar ${isUser ? 'msg__avatar--user' : 'msg__avatar--ai'}`}>
           {isUser ? 'You' : <SparkIcon size={15} />}
         </span>
-        {!isUser && <span className="msg__author">Vidya</span>}
+        {!isUser && <span className="msg__author">Vidora AI</span>}
       </div>
 
       <div className="msg__body">

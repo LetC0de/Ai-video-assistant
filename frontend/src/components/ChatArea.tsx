@@ -69,7 +69,7 @@ export function ChatArea({
           <div className="chat__mobile-brand">
             <span className="chat__mobile-logo"><LogoMark size={22} /></span>
             <span className="chat__mobile-title">
-              {meeting ? meeting.title : <>Vidya</>}
+              {meeting ? meeting.title : <>Vidora AI</>}
             </span>
             {meeting && (
               <span className="chat__mobile-sub">
@@ -88,7 +88,7 @@ export function ChatArea({
               Turn any video into a <em>conversation</em>
             </h1>
             <p className="welcome__sub">
-              Add a YouTube link or upload a recording. Vidya transcribes it, writes a summary, and
+              Add a YouTube link or upload a recording. Vidora AI transcribes it, writes a summary, and
               answers your questions in plain language.
             </p>
             <div className="welcome__cta-row">
@@ -128,7 +128,7 @@ export function ChatArea({
               <div className="msg msg--assistant msg--thinking">
                 <div className="msg__meta">
                   <span className="msg__avatar msg__avatar--ai"><SparkIcon size={15} /></span>
-                  <span className="msg__author">Vidya</span>
+                  <span className="msg__author">Vidora AI</span>
                 </div>
                 <div className="msg__body">
                   <TypingDots />
@@ -169,7 +169,7 @@ export function ChatArea({
               <div className="msg msg--assistant msg--thinking">
                 <div className="msg__meta">
                   <span className="msg__avatar msg__avatar--ai"><SparkIcon size={15} /></span>
-                  <span className="msg__author">Vidya</span>
+                  <span className="msg__author">Vidora AI</span>
                 </div>
                 <div className="msg__body">
                   <TypingDots />
@@ -192,7 +192,7 @@ export function ChatArea({
         />
         <p className="chat__footnote">
           {meeting
-            ? 'Vidya answers from this meeting — grounded in the transcript.'
+            ? 'Vidora AI answers from this meeting — grounded in the transcript.'
             : 'Add a meeting to start chatting with its content.'}
         </p>
       </div>

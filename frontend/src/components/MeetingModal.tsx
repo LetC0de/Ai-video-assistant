@@ -172,7 +172,7 @@ export function MeetingModal({ open, onClose, onProcessed }: MeetingModalProps) 
 
             <p className="meeting__note">
               <PlayIcon size={13} />
-              Vidya transcribes the source, writes a summary, and makes it chat-ready.
+              Vidora AI transcribes the source, writes a summary, and makes it chat-ready.
             </p>
 
             <button className="modal__primary meeting__submit" onClick={handleProcess} disabled={!canSubmit}>

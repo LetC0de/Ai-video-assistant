@@ -91,7 +91,7 @@ export function Composer({
       </div>
 
       <div className="composer__bar">
-        <span className="composer__hint">Vidya answers from this meeting</span>
+        <span className="composer__hint">Vidora AI answers from this meeting</span>
         {isBusy ? (
           <button className="composer__send composer__send--stop" onClick={onStop} aria-label="Stop generating">
             <StopIcon size={15} />
