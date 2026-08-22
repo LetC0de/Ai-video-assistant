@@ -484,7 +484,7 @@
   background: var(--surface);
   border: 1.5px solid var(--line);
   border-radius: 18px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 
@@ -527,9 +527,9 @@
 }
 
 .summary__lede {
-  font-size: 14.5px;
+  font-size: 15px;
   line-height: 1.7;
-  color: var(--ink-soft);
+  color: var(--ink);
   margin: 0 0 16px;
 }
 
@@ -624,10 +624,10 @@
 .summary__item {
   position: relative;
   padding: 12px 14px 12px 40px;
-  font-size: 14px;
-  line-height: 1.65;
+  font-size: 14.5px;
+  line-height: 1.6;
   color: var(--ink);
-  background: var(--bg-deep);
+  background: var(--surface);
   border: 1px solid var(--line);
   border-left: 3px solid var(--brand);
   border-radius: 12px;
