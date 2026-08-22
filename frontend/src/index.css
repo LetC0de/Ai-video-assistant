@@ -99,67 +99,80 @@
   --mobile-pad: 14px;
 }
 
-/* ===== THEME: sakura — LIGHT: soft apricot / butter / cream / baby-blue ===== */
+/* ===== THEME: sakura — EXACT COPY of blueprint "Quill / Sunlit Garden" =====
+   Same tokens, same hex, same neutral-ink contrast model. Brand is tangerine
+   coral; accents are sun/sky/berry/grape; blobs are pale coral/sun/sky. */
 [data-theme='sakura'] {
-  --bg: #fdf6ec;             /* warm cream from the pastel set */
-  --bg-deep: #f9ebd6;
-  --bg-rgb: 253, 246, 236;
-  --surface: #fffdf8;
-  --surface-2: #fffdf8;
+  --bg: #faf6ef;             /* warm cream base */
+  --bg-deep: #f4eee1;
+  --bg-rgb: 250, 246, 239;
+  --surface: #fffdf9;
+  --surface-2: #ffffff;
 
   --ambient: 1;
 
-  --ink: #5e4a3c;            /* soft warm brown (gentle, not black) */
-  --ink-soft: #977a64;
-  --ink-faint: #c4a88f;
+  --ink: #2b2620;            /* near-black warm (crisp reading text) */
+  --ink-soft: #6f6658;
+  --ink-faint: #a69a88;
 
-  --line: #f4e6d2;
-  --line-soft: #fbf2e4;
+  --line: #e9e0cf;
+  --line-soft: #f0e9da;
 
-  /* The 4 pastels: #FFBE91 apricot · #FFDDB0 butter · #FFFCE1 cream · #CFEBFF blue.
-     Brand/indigo are the apricot+butter deepened just enough for white-text buttons;
-     the pure pastels carry the blobs, avatars, video card and soft washes. */
-  --brand: #e8965f;          /* deepened #FFBE91 apricot */
-  --brand-deep: #cf7f48;
-  --brand-glow: rgba(255, 190, 145, 0.42);
-  --brand-rgb: 232, 150, 95;
+  --brand: #ff6b3d;          /* tangerine coral */
+  --brand-deep: #f2541f;
+  --brand-glow: rgba(255, 107, 61, 0.22);
+  --brand-rgb: 255, 107, 61;
 
-  --spark: #ffbe91;          /* apricot pastel (heading gradient + spark) */
-  --spark-soft: #ffe4d2;
-  --accent-rgb: 255, 190, 145;
+  --sun: #ffb53c;            /* sunshine */
+  --sun-soft: #ffe1a8;
+  --leaf: #2fae6b;           /* kiwi */
+  --leaf-soft: #cdeeda;
+  --leaf-rgb: 47, 174, 107;
+  --sky: #4aa3e8;            /* sky */
+  --sky-soft: #d3ebfc;
+  --berry: #e34f8f;          /* berry pink */
+  --berry-soft: #fcd4e4;
+  --grape: #9a6cf0;          /* soft violet */
+  --grape-soft: #e8dcfb;
 
-  --indigo: #e0a85f;         /* deepened #FFDDB0 butter — warm button sweep */
-  --indigo-soft: #ffedd2;     /* butter pastel wash */
-  --pink: #ffddb0;           /* butter pastel */
-  --pink-soft: #fff1dc;
-  --amber: #fffce1;          /* cream pastel */
-  --amber-soft: #fffcec;
-  --leaf: #cfebff;           /* baby-blue pastel */
-  --leaf-soft: #e6f4ff;
-  --leaf-rgb: 207, 235, 255;
-  --blue: #cfebff;           /* baby-blue (accent reuse) */
-  --blue-soft: #e6f4ff;
+  /* Accent aliases used by this project's components */
+  --spark: #ffb53c;          /* = sun (heading gradient + accent) */
+  --spark-soft: #ffe1a8;
+  --accent-rgb: 255, 107, 61;
+  --indigo: #f2541f;         /* = brand-deep (button sweep) */
+  --indigo-soft: #ffe1a8;
+  --pink: #e34f8f;           /* = berry */
+  --pink-soft: #fcd4e4;
+  --amber: #ffb53c;          /* = sun */
+  --amber-soft: #ffe1a8;
+  --blue: #4aa3e8;           /* = sky */
+  --blue-soft: #d3ebfc;
 
-  --danger: #e0684a;
-  --danger-soft: #fdeae2;
-  --danger-line: #f3c8b8;
-  --success: #7fae6a;         /* soft sage (off-palette, keeps "success" readable) */
+  --danger: #e5484d;
+  --danger-soft: #fdecec;
+  --danger-line: #f4c2c2;
+  --success: #2fae6b;         /* = leaf */
 
-  --theme-shadow-rgb: 95, 70, 45;
-  --overlay-bg: rgba(94, 74, 60, 0.4);
+  --theme-shadow-rgb: 80, 60, 30;
+  --overlay-bg: rgba(43, 38, 32, 0.38);
 
-  --blob-violet: #ffbe91;     /* apricot */
-  --blob-spark: #ffddb0;      /* butter */
-  --blob-indigo: #cfebff;     /* baby blue */
+  /* Pale tints only — soft light, never muddy (mirrors blueprint blob colors) */
+  --blob-violet: #ffd9c7;     /* coral */
+  --blob-spark: #ffe9b8;      /* sun */
+  --blob-indigo: #cfe8fb;     /* sky */
 
-  --video-1: #ffbe91;
-  --video-2: #ffddb0;
-  --video-3: #cfebff;
-  --video-wash: rgba(85, 65, 45, 0.5);
+  --video-1: #ff6b3d;
+  --video-2: #ffb53c;
+  --video-3: #e34f8f;
+  --video-wash: rgba(43, 38, 32, 0.5);
 
-  --code-bg: #3a2e22;
-  --code-ink: #fff3e0;
+  --code-bg: #2b221c;
+  --code-ink: #fbeede;
 }
+
+/* Blueprint uses blob opacity 0.5 / 0.4. Restore that for sakura exactly. */
+[data-theme='sakura'] .blob { opacity: 0.5; }
+[data-theme='sakura'] .blob--indigo { opacity: 0.4; }
 
 * {
   box-sizing: border-box;
