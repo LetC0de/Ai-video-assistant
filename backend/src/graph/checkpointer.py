@@ -64,11 +64,27 @@ async def init_checkpointer() -> AsyncPostgresSaver:
     # One pool for the whole process. open=False so we control startup; we open
     # it explicitly and run setup() against it. SSL is read from the connection
     # string itself, so no extra ssl kwarg is needed.
+    #
+    # Idle recycling: cloud Postgres (Supabase/Neon) silently drops idle
+    # connections after a few minutes. Without bounds the pool would hand those
+    # now-BAD connections back to a later request, surfacing as
+    # "SSL connection has been closed unexpectedly" / "the connection is closed".
+    # - max_idle: a pooled connection sits idle this long, then the pool closes
+    #   and replaces it (kept BELOW the server's idle timeout so we recycle
+    #   before the server does).
+    # - max_lifetime: hard cap on a connection's age — even a busy connection is
+    #   recycled, preventing slow memory/state drift on the server side.
+    # - keepalives: enable TCP keepalive (passed through to the connection) so a
+    #   dropped/stale socket is detected immediately rather than on the next query.
+    # No extra network round-trips are added — these are pool-internal timers
+    # and a socket option; the app makes no new endpoints or requests.
     _pool = AsyncConnectionPool(
         conn_string,
         open=False,
         max_size=20,
-        kwargs={"autocommit": True},
+        max_idle=280,          # recycle idle conns before the ~5min server drop
+        max_lifetime=1800,     # 30min hard cap on connection age
+        kwargs={"autocommit": True, "keepalives": 1},
     )
     await _pool.open()
 
