@@ -369,8 +369,8 @@
   height: 30px;
   border-radius: 10px;
   flex-shrink: 0;
-  color: var(--brand);
-  background: var(--brand-soft, rgba(255, 107, 61, 0.12));
+  color: var(--pink);
+  background: var(--pink-soft);
   transition: transform var(--transition), background var(--transition);
 }
 
@@ -380,8 +380,8 @@
 
 .convo-item--active .convo-item__icon {
   color: #fff;
-  background: linear-gradient(135deg, var(--brand), var(--brand-deep));
-  box-shadow: 0 4px 10px -4px var(--brand-glow);
+  background: linear-gradient(135deg, var(--pink), #c13a72);
+  box-shadow: 0 4px 10px -4px rgba(227, 84, 157, 0.5);
 }
 
 .convo-item__meta {
@@ -470,8 +470,8 @@
 }
 
 .convo-item__rename-btn:hover {
-  color: var(--brand);
-  background: var(--brand-soft, rgba(255, 107, 61, 0.12));
+  color: var(--pink);
+  background: var(--pink-soft);
   opacity: 1;
 }
 
