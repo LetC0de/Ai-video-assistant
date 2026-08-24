@@ -33,6 +33,7 @@ export default function App() {
   const [isThinking, setIsThinking] = useState(false);
   const [loadError, setLoadError] = useState('');
   const [meetingOpen, setMeetingOpen] = useState(false);
+  const [meetingSource, setMeetingSource] = useState<'url' | 'file'>('url');
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth <= 860 : false
@@ -99,7 +100,8 @@ export default function App() {
     }
   };
 
-  const handleNewMeeting = () => {
+  const handleNewMeeting = (source: 'url' | 'file' = 'url') => {
+    setMeetingSource(source);
     setMeetingOpen(true);
     if (isMobile) setSidebarOpen(false);
   };
@@ -316,8 +318,8 @@ export default function App() {
         onStop={handleStop}
         onRegenerate={handleRegenerate}
         onRetry={handleRetry}
-        onNewMeeting={handleNewMeeting}
-        onUpload={() => setMeetingOpen(true)}
+        onNewMeeting={() => handleNewMeeting('url')}
+        onUpload={() => handleNewMeeting('file')}
         isMobile={isMobile}
         onToggleSidebar={toggleSidebar}
       />
@@ -332,6 +334,7 @@ export default function App() {
         open={meetingOpen}
         onClose={() => setMeetingOpen(false)}
         onProcessed={handleProcessed}
+        defaultSource={meetingSource}
       />
     </div>
   );

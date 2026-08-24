@@ -6,12 +6,13 @@ interface MeetingModalProps {
   open: boolean;
   onClose: () => void;
   onProcessed: (meetingId: number) => void;
+  defaultSource?: Source;
 }
 
 type Source = 'url' | 'file';
 type Phase = 'idle' | 'processing' | 'done' | 'error';
 
-export function MeetingModal({ open, onClose, onProcessed }: MeetingModalProps) {
+export function MeetingModal({ open, onClose, onProcessed, defaultSource = 'url' }: MeetingModalProps) {
   const [source, setSource] = useState<Source>('url');
   const [url, setUrl] = useState('');
   const [fileName, setFileName] = useState('');
@@ -25,7 +26,7 @@ export function MeetingModal({ open, onClose, onProcessed }: MeetingModalProps) 
 
   useEffect(() => {
     if (open) {
-      setSource('url');
+      setSource(defaultSource);
       setUrl('');
       setFileName('');
       setFile(null);
