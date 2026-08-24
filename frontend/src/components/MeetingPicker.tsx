@@ -101,21 +101,21 @@ export function MeetingPicker({
         <button className="picker__backdrop" onClick={onClose} aria-label="Close menu" />
       )}
 
-      <div className="picker" ref={ref} style={style} role="menu" aria-label="Choose a meeting">
+      <div className="picker" ref={ref} style={style} role="menu" aria-label="Add a document">
         <div className="picker__head">
-          <span className="picker__title">Ask about</span>
+          <span className="picker__title">Add a document</span>
           <button className="picker__close" onClick={onClose} aria-label="Close">
             <XIcon size={16} />
           </button>
         </div>
 
-        {/* Option 1 — add a new meeting */}
+        {/* Option 1 — upload a new meeting */}
         <div className="picker__section">
           <button className="picker__upload-row" onClick={handleUpload}>
             <span className="picker__upload-ico"><PlusIcon size={17} /></span>
             <span className="picker__upload-meta">
-              <span className="picker__upload-name">Add a meeting</span>
-              <span className="picker__upload-sub">Paste a link or upload a file</span>
+              <span className="picker__upload-name">Upload new</span>
+              <span className="picker__upload-sub">Add a meeting to chat</span>
             </span>
           </button>
         </div>
@@ -123,13 +123,13 @@ export function MeetingPicker({
         {/* Option 2 — already uploaded meetings */}
         <div className="picker__section">
           <div className="picker__subhead">
-            <span className="picker__subhead-label">Your meetings</span>
+            <span className="picker__subhead-label">Uploaded</span>
             {ready.length > 0 && <span className="picker__count">{ready.length}</span>}
           </div>
 
           {ready.length === 0 ? (
             <div className="picker__empty">
-              <p>No meetings yet. Add one to start chatting.</p>
+              <p>No meetings uploaded yet.</p>
             </div>
           ) : (
             <div className="picker__list">
