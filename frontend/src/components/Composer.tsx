@@ -131,10 +131,6 @@ export function Composer({
           <PlusIcon size={20} />
         </button>
 
-        <span className="composer__hint">
-          {activeMeeting ? 'Vidora AI answers from this meeting' : 'Ask Vidora AI anything'}
-        </span>
-
         {isBusy ? (
           <button className="composer__send composer__send--stop" onClick={onStop} aria-label="Stop generating">
             <StopIcon size={15} />

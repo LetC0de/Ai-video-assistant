@@ -873,6 +873,7 @@
   background: linear-gradient(135deg, var(--brand), var(--indigo));
   color: #fff;
   flex-shrink: 0;
+  margin-left: auto;
   box-shadow: 0 6px 14px -5px var(--brand-glow);
   transition: transform var(--transition), box-shadow var(--transition), opacity var(--transition);
 }
