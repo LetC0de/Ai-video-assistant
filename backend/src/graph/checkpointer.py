@@ -49,6 +49,24 @@ def _build_connection_string() -> str:
     return settings.DB_CONNECTION
 
 
+async def _check_connection(conn) -> None:
+    """Health-check a pooled connection right before it's handed to a query.
+
+    Runs on every checkout (getconn). If the socket is stale/BAD — e.g. the
+    cloud server silently dropped it while idle — this raises, and the pool
+    disposes the connection and opens a fresh one instead of letting the query
+    hang until TCP timeout. This mirrors SQLAlchemy's pool_pre_ping for the
+    psycopg pool, which has no built-in equivalent.
+
+    The SELECT 1 is a single cheap round-trip only on a connection we're about
+    to use; idle connections are recycled by max_idle/max_lifetime without any
+    query. The app makes no new user-facing requests or endpoints from this.
+    """
+    async with conn.cursor() as cur:
+        await cur.execute("SELECT 1")
+        await cur.fetchone()
+
+
 async def init_checkpointer() -> AsyncPostgresSaver:
     """Create the AsyncPostgresSaver and run setup() once.
 
@@ -76,14 +94,17 @@ async def init_checkpointer() -> AsyncPostgresSaver:
     #   recycled, preventing slow memory/state drift on the server side.
     # - keepalives: enable TCP keepalive (passed through to the connection) so a
     #   dropped/stale socket is detected immediately rather than on the next query.
-    # No extra network round-trips are added — these are pool-internal timers
-    # and a socket option; the app makes no new endpoints or requests.
+    # - check: health-check each connection on checkout (SELECT 1 + ping); if the
+    #   server dropped it, the pool disposes and reopens instead of hanging.
+    # No extra user-facing requests or endpoints are added — these are
+    # pool-internal timers and a socket option; the app's API surface is unchanged.
     _pool = AsyncConnectionPool(
         conn_string,
         open=False,
         max_size=20,
         max_idle=280,          # recycle idle conns before the ~5min server drop
         max_lifetime=1800,     # 30min hard cap on connection age
+        check=_check_connection,
         kwargs={"autocommit": True, "keepalives": 1},
     )
     await _pool.open()
