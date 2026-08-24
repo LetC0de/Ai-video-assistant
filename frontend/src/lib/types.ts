@@ -46,6 +46,19 @@ export interface ProcessMeetingInput {
   language?: string;
 }
 
+// A chat session owned by the user (Blueprint-style persistent history).
+export interface Conversation {
+  conversation_id: number;
+  title: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ConversationMessage {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 export type MessageRole = 'user' | 'assistant';
 
 export interface ChatMessage {

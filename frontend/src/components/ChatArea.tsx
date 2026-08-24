@@ -8,6 +8,7 @@ import { LogoMark, MenuIcon, SparkIcon, PlayIcon, UploadIcon, ChevronIcon } from
 interface ChatAreaProps {
   meeting?: Meeting;
   messages: ChatMessage[];
+  activeConversationTitle?: string;
   isThinking: boolean;
   composerValue: string;
   onComposerChange: (v: string) => void;
@@ -31,9 +32,20 @@ const SUGGESTIONS = [
   { icon: '❓', text: 'What open questions are still unanswered?' },
 ];
 
+// Concierge prompts shown when no meeting is selected (no conversation is tied
+// to a transcript). These introduce the product and guide the user toward
+// adding a meeting instead of assuming a transcript is already in context.
+const CONCIERGE_SUGGESTIONS = [
+  { icon: '✨', text: 'What is Vidora AI and what does it do?' },
+  { icon: '📥', text: 'How do I add a YouTube link or upload a recording?' },
+  { icon: '💬', text: 'What can I ask about a meeting once it is added?' },
+  { icon: '🚀', text: 'Help me get started.' },
+];
+
 export function ChatArea({
   meeting,
   messages,
+  activeConversationTitle,
   isThinking,
   composerValue,
   onComposerChange,
@@ -75,7 +87,13 @@ export function ChatArea({
           <div className="chat__mobile-brand">
             <span className="chat__mobile-logo"><LogoMark size={22} /></span>
             <span className="chat__mobile-title">
-              {meeting ? meeting.title : <>Vidora AI</>}
+              {activeConversationTitle ? (
+                activeConversationTitle
+              ) : meeting ? (
+                meeting.title
+              ) : (
+                <>Vidora AI</>
+              )}
             </span>
             {meeting && (
               <span className="chat__mobile-sub">
@@ -86,30 +104,7 @@ export function ChatArea({
         </div>
       )}
 
-      {!meeting && !hasChat ? (
-        <div className="chat__welcome">
-          <div className="welcome__inner">
-            <div className="welcome__mark"><LogoMark size={46} /></div>
-            <h1 className="welcome__title">
-              Turn any video into a <em>conversation</em>
-            </h1>
-            <p className="welcome__sub">
-              Add a YouTube link or upload a recording. Vidora AI transcribes it, writes a summary, and
-              answers your questions in plain language.
-            </p>
-            <div className="welcome__cta-row">
-              <button className="welcome__upload" onClick={onNewMeeting}>
-                <PlayIcon size={18} />
-                Add a meeting
-              </button>
-              <button className="welcome__upload welcome__upload--ghost" onClick={onUpload}>
-                <UploadIcon size={18} />
-                Upload file
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : (
+      {hasChat ? (
         <div className="chat__thread" ref={scrollRef}>
           <div className="chat__thread-inner">
             {meeting?.summary && (
@@ -124,24 +119,6 @@ export function ChatArea({
               <div className="chat__empty">
                 <p className="chat__empty-title">Ask anything about this meeting</p>
                 <p className="chat__empty-sub">Questions are answered from what was actually said.</p>
-              </div>
-            )}
-            {meeting && !hasChat && (
-              <div className="welcome__suggestions">
-                {SUGGESTIONS.map((s, i) => (
-                  <button
-                    key={i}
-                    className="suggestion"
-                    onClick={() => {
-                      onComposerChange(s.text);
-                      onSend();
-                    }}
-                    style={{ animationDelay: `${120 + i * 70}ms` }}
-                  >
-                    <span className="suggestion__icon">{s.icon}</span>
-                    <span className="suggestion__text">{s.text}</span>
-                  </button>
-                ))}
               </div>
             )}
             {messages.map((m, i) => (
@@ -167,6 +144,52 @@ export function ChatArea({
               </div>
             )}
             <div ref={bottomRef} />
+          </div>
+        </div>
+      ) : (
+        <div className="chat__welcome">
+          <div className="welcome__inner">
+            <div className="welcome__mark"><LogoMark size={46} /></div>
+            <h1 className="welcome__title">
+              {activeConversationTitle ? (
+                <>{activeConversationTitle}</>
+              ) : meeting ? (
+                <>Ask anything about <em>"{meeting.title}"</em></>
+              ) : (
+                <>Turn any video into a <em>conversation</em></>
+              )}
+            </h1>
+            <p className="welcome__sub">
+              {meeting
+                ? 'Questions are answered from what was actually said.'
+                : 'Add a YouTube link or upload a recording. Vidora AI transcribes it, writes a summary, and answers your questions in plain language.'}
+            </p>
+            <div className="welcome__cta-row">
+              <button className="welcome__upload" onClick={onNewMeeting}>
+                <PlayIcon size={18} />
+                Add a meeting
+              </button>
+              <button className="welcome__upload welcome__upload--ghost" onClick={onUpload}>
+                <UploadIcon size={18} />
+                Upload file
+              </button>
+            </div>
+            <div className="welcome__suggestions">
+              {(meeting ? SUGGESTIONS : CONCIERGE_SUGGESTIONS).map((s, i) => (
+                <button
+                  key={i}
+                  className="suggestion"
+                  onClick={() => {
+                    onComposerChange(s.text);
+                    onSend();
+                  }}
+                  style={{ animationDelay: `${120 + i * 70}ms` }}
+                >
+                  <span className="suggestion__icon">{s.icon}</span>
+                  <span className="suggestion__text">{s.text}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       )}
@@ -280,3 +303,6 @@ function SummaryPanel({
     </div>
   );
 }
+
+// Local import avoids a circular-feeling top import; markdown rendering for the
+// summary panel only. Kept at the bottom so the component reads top-down.

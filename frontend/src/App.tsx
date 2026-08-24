@@ -1,12 +1,17 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   chatQuery,
+  createConversation,
+  deleteConversation,
   deleteMeeting,
+  getConversationMessages,
   getMeeting,
+  listConversations,
   listMeetings,
+  renameConversation,
 } from './lib/api';
 import { useAuth } from './lib/auth';
-import type { ChatMessage, Meeting, MeetingSummary } from './lib/types';
+import type { ChatMessage, Conversation, ConversationMessage, Meeting, MeetingSummary } from './lib/types';
 import { Sidebar } from './components/Sidebar';
 import { ChatArea } from './components/ChatArea';
 import { MeetingModal } from './components/MeetingModal';
@@ -30,9 +35,13 @@ export default function App() {
   const [meetings, setMeetings] = useState<MeetingSummary[]>([]);
   const [meetingDetails, setMeetingDetails] = useState<Record<number, Meeting>>({});
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [messagesByMeeting, setMessagesByMeeting] = useState<Record<number | string, ChatMessage[]>>({});
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [activeConversationId, setActiveConversationId] = useState<number | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [composerValue, setComposerValue] = useState('');
   const [isThinking, setIsThinking] = useState(false);
+  const [loadingConversations, setLoadingConversations] = useState(false);
+  const [loadingMessages, setLoadingMessages] = useState(false);
   const [loadError, setLoadError] = useState('');
   const [meetingOpen, setMeetingOpen] = useState(false);
   const [meetingSource, setMeetingSource] = useState<'url' | 'file'>('url');
@@ -45,9 +54,8 @@ export default function App() {
   const abortRef = useRef<AbortController | null>(null);
 
   const activeMeeting = selectedId !== null ? meetingDetails[selectedId] ?? null : null;
-  // Concierge mode (no meeting) keeps its own thread under the 'concierge' key.
-  const activeKey: number | 'concierge' = activeMeeting ? activeMeeting.id : 'concierge';
-  const activeMessages = messagesByMeeting[activeKey] ?? [];
+  const activeConversationTitle =
+    conversations.find((c) => c.conversation_id === activeConversationId)?.title;
 
   // Track viewport width for mobile mode
   useEffect(() => {
@@ -75,19 +83,38 @@ export default function App() {
     }
   }, []);
 
+  const refreshConversations = useCallback(async () => {
+    setLoadingConversations(true);
+    try {
+      const list = await listConversations();
+      setConversations(list);
+      return list;
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : 'Could not load conversations.');
+      return [];
+    } finally {
+      setLoadingConversations(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (isBooting || !user) return;
     void refreshMeetings();
-  }, [refreshMeetings, isBooting, user]);
+    void refreshConversations();
+  }, [refreshMeetings, refreshConversations, isBooting, user]);
 
   // Any switch of the signed-in user clears the previous session's chat state.
   useEffect(() => {
     setGuestView('landing');
-    setMessagesByMeeting({});
+    setMessages([]);
     setMeetingDetails({});
     setSelectedId(null);
+    setConversations([]);
+    setActiveConversationId(null);
     setComposerValue('');
     setIsThinking(false);
+    setLoadingConversations(false);
+    setLoadingMessages(false);
     setMeetingOpen(false);
     setLoadError('');
     abortRef.current?.abort();
@@ -106,6 +133,68 @@ export default function App() {
     }
   };
 
+  // Load a conversation's message history from the backend. Aborts any in-flight
+  // stream first so a stale callback from the previous chat can't paint into this
+  // one. The returned messages are mapped into the UI's ChatMessage shape; the
+  // source of truth stays server-side.
+  const handleSelectConversation = useCallback(
+    async (id: number) => {
+      if (id === activeConversationId) {
+        if (isMobile) setSidebarOpen(false);
+        return;
+      }
+      abortRef.current?.abort();
+      abortRef.current = null;
+      setIsThinking(false);
+
+      setActiveConversationId(id);
+      setMessages([]);
+      setComposerValue('');
+      setLoadingMessages(true);
+      if (isMobile) setSidebarOpen(false);
+
+      try {
+        const history = await getConversationMessages(id);
+        // Guard: if the user switched again while we were fetching, drop the
+        // stale result so we never overwrite the newly selected conversation.
+        setActiveConversationId((current) => {
+          if (current === id) {
+            setMessages(
+              history.map((m: ConversationMessage, i) => ({
+                id: `${id}-${i}`,
+                role: m.role,
+                content: m.content,
+                meetingId: null,
+                concierge: false,
+              }))
+            );
+          }
+          return current;
+        });
+      } catch (e) {
+        setLoadError(e instanceof Error ? e.message : 'Could not load this conversation.');
+      } finally {
+        setLoadingMessages(false);
+      }
+    },
+    [activeConversationId, isMobile]
+  );
+
+  const handleNewChat = () => {
+    // Abort any active stream and reset to a fresh, empty chat. The conversation
+    // thread is created lazily on the first send, so an empty "New chat" doesn't
+    // leave a blank row in the sidebar.
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setIsThinking(false);
+    setMessages([]);
+    setSelectedId(null);
+    setActiveConversationId(null);
+    setComposerValue('');
+    setPickerOpen(false);
+    if (isMobile) setSidebarOpen(false);
+  };
+
   const handleNewMeeting = (source: 'url' | 'file' = 'url') => {
     setMeetingSource(source);
     setMeetingOpen(true);
@@ -118,9 +207,6 @@ export default function App() {
     const created = list.find((m) => m.id === meetingId);
     if (created) {
       setSelectedId(created.id);
-      setMessagesByMeeting((prev) => ({ ...prev, [created.id]: [] }));
-      // The newly created row only has summary fields; fetch the full record
-      // (with the written summary/insights) so the panel can render.
       getMeeting(meetingId)
         .then((m) => setMeetingDetails((prev) => ({ ...prev, [meetingId]: m })))
         .catch(() => {});
@@ -129,24 +215,55 @@ export default function App() {
 
   const handleDelete = async (id: number) => {
     setMeetings((prev) => prev.filter((m) => m.id !== id));
-    if (selectedId === id) {
-      setSelectedId(null);
-      setMessagesByMeeting((prev) => {
-        const next = { ...prev };
-        delete next[id];
-        return next;
-      });
-    }
+    if (selectedId === id) setSelectedId(null);
     try {
       await deleteMeeting(id);
-      setMessagesByMeeting((prev) => {
-        const next = { ...prev };
-        delete next[id];
-        return next;
-      });
     } catch (e) {
       setLoadError(e instanceof Error ? e.message : 'Could not delete meeting.');
       void refreshMeetings();
+    }
+  };
+
+  const handleDeleteConversation = async (id: number) => {
+    // Abort a stream if the user deletes the active conversation mid-flight.
+    if (id === activeConversationId) {
+      abortRef.current?.abort();
+      abortRef.current = null;
+      setIsThinking(false);
+    }
+    setConversations((prev) => prev.filter((c) => c.conversation_id !== id));
+    try {
+      await deleteConversation(id);
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : 'Could not delete conversation.');
+      void refreshConversations();
+      return;
+    }
+    if (activeConversationId === id) {
+      // Deleting the active chat drops the user into a fresh, empty "New Chat"
+      // state rather than jumping to another conversation.
+      abortRef.current?.abort();
+      abortRef.current = null;
+      setIsThinking(false);
+      setActiveConversationId(null);
+      setMessages([]);
+      setSelectedId(null);
+    }
+  };
+
+  const handleRenameConversation = async (id: number, title: string) => {
+    // Optimistically update the sidebar so the rename feels instant, then persist.
+    setConversations((prev) =>
+      prev.map((c) => (c.conversation_id === id ? { ...c, title } : c))
+    );
+    try {
+      const updated = await renameConversation(id, title);
+      setConversations((prev) =>
+        prev.map((c) => (c.conversation_id === id ? { ...c, ...updated } : c))
+      );
+    } catch (e) {
+      setLoadError(e instanceof Error ? e.message : 'Could not rename conversation.');
+      void refreshConversations();
     }
   };
 
@@ -155,8 +272,30 @@ export default function App() {
       const text = (overrideText ?? composerValue).trim();
       if (!text || isThinking) return;
 
+      // Ensure a conversation thread exists for this chat session. Created lazily
+      // — only on the first send after "New Chat" or login — so the backend can
+      // checkpoint under a known conversation_id.
+      let conversationId = activeConversationId;
+      if (conversationId === null) {
+        try {
+          const convo = await createConversation();
+          conversationId = convo.conversation_id;
+          setActiveConversationId(conversationId);
+          // Seed the sidebar entry immediately so the auto-generated title (emitted
+          // in the `title` SSE event below) has a row to update.
+          setConversations((prev) =>
+            prev.some((c) => c.conversation_id === convo.conversation_id)
+              ? prev
+              : [{ ...convo }, ...prev]
+          );
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : 'Could not start a new conversation.';
+          setLoadError(msg);
+          return;
+        }
+      }
+
       // No meeting selected → concierge mode (chat about Vidora AI itself).
-      // The concierge thread is keyed by null; per-meeting threads by their id.
       const meetingId: number | null = activeMeeting ? activeMeeting.id : null;
       const userMsg: ChatMessage = {
         id: crypto.randomUUID(),
@@ -174,10 +313,7 @@ export default function App() {
         streaming: true,
       };
 
-      setMessagesByMeeting((prev) => ({
-        ...prev,
-        [meetingId ?? 'concierge']: [...(prev[meetingId ?? 'concierge'] ?? []), userMsg, assistantMsg],
-      }));
+      setMessages((prev) => [...prev, userMsg, assistantMsg]);
       setComposerValue('');
       setIsThinking(true);
 
@@ -186,32 +322,40 @@ export default function App() {
 
       try {
         await chatQuery(
+          conversationId,
           meetingId,
           text,
           {
             onDelta: (delta) =>
-              setMessagesByMeeting((prev) => ({
-                ...prev,
-                [meetingId ?? 'concierge']: (prev[meetingId ?? 'concierge'] ?? []).map((m) =>
+              setMessages((prev) =>
+                prev.map((m) =>
                   m.id === assistantMsg.id ? { ...m, content: m.content + delta } : m
-                ),
-              })),
-            onError: (message) =>
-              setMessagesByMeeting((prev) => ({
-                ...prev,
-                [meetingId ?? 'concierge']: (prev[meetingId ?? 'concierge'] ?? []).map((m) =>
-                  m.id === assistantMsg.id
-                    ? { ...m, content: m.content || message, error: true, streaming: false }
-                    : m
-                ),
-              })),
+                )
+              ),
             onDone: () =>
-              setMessagesByMeeting((prev) => ({
-                ...prev,
-                [meetingId ?? 'concierge']: (prev[meetingId ?? 'concierge'] ?? []).map((m) =>
+              setMessages((prev) =>
+                prev.map((m) =>
                   m.id === assistantMsg.id ? { ...m, streaming: false } : m
-                ),
-              })),
+                )
+              ),
+            // Backend auto-generates a title from the first question and sends it
+            // as a `title` SSE event. Persist it into the sidebar row.
+            onTitle: (title) => {
+              if (!title) return;
+              setConversations((prev) =>
+                prev.map((c) =>
+                  c.conversation_id === conversationId ? { ...c, title } : c
+                )
+              );
+            },
+            onError: (message) =>
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.id === assistantMsg.id
+                    ? { ...m, streaming: false, error: true, content: m.content || message }
+                    : m
+                )
+              ),
           },
           controller.signal
         );
@@ -219,57 +363,53 @@ export default function App() {
         const msg = e instanceof Error ? e.message : 'Request failed';
         const aborted = (e as Error)?.name === 'AbortError';
         if (!aborted) {
-          setMessagesByMeeting((prev) => ({
-            ...prev,
-            [meetingId ?? 'concierge']: (prev[meetingId ?? 'concierge'] ?? []).map((m) =>
-              m.id === assistantMsg.id ? { ...m, content: msg, error: true, streaming: false } : m
-            ),
-          }));
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === assistantMsg.id
+                ? { ...m, content: msg, error: true, streaming: false }
+                : m
+            )
+          );
         }
       } finally {
         setIsThinking(false);
         abortRef.current = null;
       }
     },
-    [composerValue, activeMeeting, isThinking]
+    [composerValue, activeMeeting, activeConversationId, isThinking]
   );
 
   const handleStop = () => {
     abortRef.current?.abort();
     setIsThinking(false);
-    setMessagesByMeeting((prev) => ({
-      ...prev,
-      [activeKey]: (prev[activeKey] ?? []).map((m) =>
-        m.role === 'assistant' && m.content === '' ? { ...m, content: 'Stopped.' } : m
-      ),
-    }));
+    setMessages((prev) =>
+      prev.map((m) =>
+        m.role === 'assistant' && m.content === ''
+          ? { ...m, content: 'Stopped.', streaming: false }
+          : m.streaming
+            ? { ...m, streaming: false }
+            : m
+      )
+    );
   };
 
   const handleRegenerate = useCallback(() => {
-    const thread = activeMessages;
-    const lastUser = [...thread].reverse().find((m) => m.role === 'user');
+    const lastUser = [...messages].reverse().find((m) => m.role === 'user');
     if (!lastUser) return;
-    setMessagesByMeeting((prev) => ({
-      ...prev,
-      [activeKey]: prev[activeKey].filter((m) => m.role === 'user'),
-    }));
+    setMessages((prev) => prev.filter((m) => m.role === 'user'));
     void handleSend(lastUser.content);
-  }, [activeMessages, handleSend, activeKey]);
+  }, [messages, handleSend]);
 
   const handleRetry = useCallback(
     (failedId: string) => {
-      const thread = messagesByMeeting[activeKey] ?? [];
-      const idx = thread.findIndex((m) => m.id === failedId);
+      const idx = messages.findIndex((m) => m.id === failedId);
       if (idx < 0) return;
-      const question = [...thread.slice(0, idx)].reverse().find((m) => m.role === 'user');
+      const question = [...messages.slice(0, idx)].reverse().find((m) => m.role === 'user');
       if (!question) return;
-      setMessagesByMeeting((prev) => ({
-        ...prev,
-        [activeKey]: (prev[activeKey] ?? []).filter((m) => m.id !== failedId),
-      }));
+      setMessages((prev) => prev.filter((m) => m.id !== failedId));
       void handleSend(question.content);
     },
-    [messagesByMeeting, activeKey, handleSend]
+    [messages, handleSend]
   );
 
   const toggleSidebar = () => setSidebarOpen((v) => !v);
@@ -331,10 +471,17 @@ export default function App() {
       <Sidebar
         meetings={meetings}
         selectedId={selectedId}
+        conversations={conversations}
+        activeConversationId={activeConversationId}
+        loadingConversations={loadingConversations}
+        loadingMessages={loadingMessages}
         collapsed={!sidebarOpen}
         onSelect={handleSelect}
-        onNewMeeting={() => handleNewMeeting('url')}
+        onSelectConversation={handleSelectConversation}
+        onNewChat={handleNewChat}
         onDelete={handleDelete}
+        onDeleteConversation={handleDeleteConversation}
+        onRenameConversation={handleRenameConversation}
         onClose={() => setSidebarOpen(false)}
         onExpand={() => setSidebarOpen(true)}
         isMobile={isMobile}
@@ -344,7 +491,8 @@ export default function App() {
 
       <ChatArea
         meeting={activeMeeting ?? undefined}
-        messages={activeMessages}
+        messages={messages}
+        activeConversationTitle={activeConversationTitle}
         isThinking={isThinking}
         composerValue={composerValue}
         onComposerChange={setComposerValue}

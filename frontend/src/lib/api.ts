@@ -1,4 +1,6 @@
 import type {
+  Conversation,
+  ConversationMessage,
   LoginInput,
   Meeting,
   MeetingSummary,
@@ -92,22 +94,25 @@ export async function deleteMeeting(id: number): Promise<void> {
   await handle<unknown>(res);
 }
 
-// Streaming chat against /chat/query (SSE). With meetingId set, retrieves from
-// that meeting's transcript; with meetingId null, answers in concierge mode.
+// Streaming chat against /chat/query (SSE). Requires a conversationId (the
+// persistent session). With meetingId set, retrieves from that meeting's
+// transcript; with meetingId null, answers in concierge mode.
 export async function chatQuery(
+  conversationId: number,
   meetingId: number | null,
   question: string,
   handlers: {
     onDelta?: (delta: string) => void;
     onError?: (message: string) => void;
     onDone?: () => void;
+    onTitle?: (title: string) => void;
   },
   signal?: AbortSignal
 ): Promise<void> {
   const res = await fetch(`${BASE}/chat/query`, {
     method: 'POST',
     headers: authHeaders({ 'Content-Type': 'application/json' }),
-    body: JSON.stringify({ meeting_id: meetingId, question }),
+    body: JSON.stringify({ conversation_id: conversationId, meeting_id: meetingId, question }),
     signal,
   });
   if (!res.ok || !res.body) {
@@ -148,9 +153,50 @@ export async function chatQuery(
       }
       if (event === 'token') handlers.onDelta?.(data.delta ?? '');
       else if (event === 'error') handlers.onError?.(data.message ?? 'Something went wrong.');
+      else if (event === 'title') handlers.onTitle?.(data.title ?? '');
       else if (event === 'done') handlers.onDone?.();
     }
   }
+}
+
+// ---------- Conversations (persistent chat history) ----------
+
+export async function createConversation(title = 'New Chat'): Promise<Conversation> {
+  const res = await fetch(`${BASE}/conversations/`, {
+    method: 'POST',
+    headers: authHeaders({ 'Content-Type': 'application/json' }),
+    body: JSON.stringify({ title }),
+  });
+  return handle<Conversation>(res);
+}
+
+export async function listConversations(): Promise<Conversation[]> {
+  const res = await fetch(`${BASE}/conversations/`, { headers: authHeaders() });
+  const data = await handle<{ conversations: Conversation[] }>(res);
+  return data.conversations ?? [];
+}
+
+export async function getConversationMessages(id: number): Promise<ConversationMessage[]> {
+  const res = await fetch(`${BASE}/conversations/${id}/messages`, { headers: authHeaders() });
+  const data = await handle<{ conversation_id: number; messages: ConversationMessage[] }>(res);
+  return data.messages ?? [];
+}
+
+export async function renameConversation(id: number, title: string): Promise<Conversation> {
+  const res = await fetch(`${BASE}/conversations/${id}`, {
+    method: 'PATCH',
+    headers: authHeaders({ 'Content-Type': 'application/json' }),
+    body: JSON.stringify({ title }),
+  });
+  return handle<Conversation>(res);
+}
+
+export async function deleteConversation(id: number): Promise<void> {
+  const res = await fetch(`${BASE}/conversations/${id}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  });
+  await handle<unknown>(res);
 }
 
 // ---------- Auth ----------

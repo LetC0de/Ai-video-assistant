@@ -50,6 +50,10 @@ pydantic-settings>=2.2.0          # Typed settings from .env
 # ── Database (Postgres + migrations) ──────────────────────────────────────────
 sqlalchemy>=2.0.0                 # ORM
 psycopg2-binary>=2.9.0            # Postgres driver (Neon)
+psycopg[binary]>=3.2.0            # Async Postgres driver (LangGraph PostgresSaver)
+langgraph>=0.2.0                  # Conversation graph (memory + state)
+langgraph-checkpoint>=2.0.0       # Checkpoint primitives
+langgraph-checkpoint-postgres>=2.0.0  # Postgres-backed conversation memory
 alembic>=1.13.0                   # DB migrations
 
 # ── Auth (JWT + password hashing) ─────────────────────────────────────────────
