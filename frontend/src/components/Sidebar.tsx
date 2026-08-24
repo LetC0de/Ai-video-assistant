@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Conversation, MeetingSummary, User } from '../lib/types';
-import { meetingColor, formatDate, formatTime, initialsFromTitle, sourceLabel } from '../lib/palette';
+import { meetingColor, formatDate, formatTime, initialsFromTitle } from '../lib/palette';
 import {
   LogoMark, NewChatIcon, TrashIcon, ChevronIcon, XIcon, LogoutIcon, UserIcon, PlayIcon, PencilIcon, ChatIcon,
 } from './Icons';
@@ -191,6 +191,8 @@ export function Sidebar({
               const active = m.id === selectedId;
               const isConfirming = confirmingId === m.id;
               const isDeleting = deletingId === m.id;
+              const isYoutube = m.source && /youtube\.com|youtu\.be/i.test(m.source);
+              const sourceLabelText = isYoutube ? 'Link' : 'Local';
               return (
                 <div key={m.id} className={`meeting-item ${active ? 'meeting-item--active' : ''}`}>
                   <button className="meeting-item__main" onClick={() => onSelect(m.id)}>
@@ -203,9 +205,8 @@ export function Sidebar({
                     <span className="meeting-item__meta">
                       <span className="meeting-item__name">{m.title}</span>
                       <span className="meeting-item__sub">
-                        <span className="meeting-item__source">
-                          {m.source && /youtube\.com|youtu\.be/i.test(m.source) ? 'YouTube' : sourceLabel(m.source || '')}
-                        </span>
+                        <span className="status-dot status-dot--ready" aria-hidden="true" />
+                        <span className="meeting-item__source">{sourceLabelText}</span>
                         <span className="meeting-item__sep">·</span>
                         {formatDate(m.created_at)}
                       </span>

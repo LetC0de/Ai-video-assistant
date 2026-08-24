@@ -147,7 +147,7 @@ export function MeetingPicker({
                     </span>
                     <span className="picker__meta">
                       <span className="picker__name">{m.title}</span>
-                      <span className="picker__sub">{youtube ? 'YouTube' : 'Uploaded'}</span>
+                      <span className="picker__sub">{youtube ? 'Link' : 'Local'}</span>
                     </span>
                     {active && <span className="picker__check"><CheckIcon size={15} /></span>}
                   </button>
