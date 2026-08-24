@@ -17,6 +17,9 @@ interface ChatAreaProps {
   onRetry: (messageId: string) => void;
   onNewMeeting: () => void;
   onUpload: () => void;
+  activeMeetingChip?: { title: string; isYoutube: boolean };
+  onClearMeeting: () => void;
+  onPickMeeting: (e?: React.MouseEvent) => void;
   isMobile: boolean;
   onToggleSidebar: () => void;
 }
@@ -40,6 +43,9 @@ export function ChatArea({
   onRetry,
   onNewMeeting,
   onUpload,
+  activeMeetingChip,
+  onClearMeeting,
+  onPickMeeting,
   isMobile,
   onToggleSidebar,
 }: ChatAreaProps) {
@@ -188,6 +194,9 @@ export function ChatArea({
           onSubmit={onSend}
           onStop={onStop}
           isBusy={isThinking}
+          activeMeeting={activeMeetingChip}
+          onClearMeeting={onClearMeeting}
+          onPickMeeting={onPickMeeting}
           disabled={!meeting}
         />
         <p className="chat__footnote">

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { SendIcon, StopIcon } from './Icons';
+import { SendIcon, StopIcon, XIcon, PlusIcon, LinkIcon, FileIcon } from './Icons';
 
 interface ComposerProps {
   value: string;
@@ -7,6 +7,9 @@ interface ComposerProps {
   onSubmit: () => void;
   onStop: () => void;
   isBusy: boolean;
+  activeMeeting?: { title: string; isYoutube: boolean };
+  onClearMeeting: () => void;
+  onPickMeeting: (e?: React.MouseEvent) => void;
   disabled?: boolean;
 }
 
@@ -28,6 +31,9 @@ export function Composer({
   onSubmit,
   onStop,
   isBusy,
+  activeMeeting,
+  onClearMeeting,
+  onPickMeeting,
   disabled,
 }: ComposerProps) {
   const ref = useRef<HTMLTextAreaElement>(null);
@@ -56,7 +62,9 @@ export function Composer({
     return () => window.clearInterval(id);
   }, [isBusy, value]);
 
-  const placeholder = PLACEHOLDER_PHRASES[phraseIndex];
+  const placeholder = activeMeeting
+    ? 'Ask anything about this meeting…'
+    : PLACEHOLDER_PHRASES[phraseIndex];
 
   const submit = () => {
     if (!canSend) return;
@@ -65,6 +73,21 @@ export function Composer({
 
   return (
     <div className={`composer ${focused ? 'composer--focused' : ''} ${disabled ? 'composer--disabled' : ''}`}>
+      {activeMeeting && (
+        <div className="composer__doc">
+          <span className="composer__doc-label">Asking about</span>
+          <span className="doc-chip">
+            <span className={`doc-chip__avatar ${activeMeeting.isYoutube ? 'doc-chip__avatar--yt' : 'doc-chip__avatar--file'}`}>
+              {activeMeeting.isYoutube ? <LinkIcon size={14} /> : <FileIcon size={14} />}
+            </span>
+            <span className="doc-chip__name">{activeMeeting.title}</span>
+            <button className="doc-chip__x" onClick={onClearMeeting} aria-label="Stop asking about this meeting">
+              <XIcon size={13} />
+            </button>
+          </span>
+        </div>
+      )}
+
       <div className="composer__input-wrap">
         <textarea
           ref={ref}
@@ -83,7 +106,7 @@ export function Composer({
           }}
           disabled={disabled}
         />
-        {!isBusy && value.trim().length === 0 && (
+        {!activeMeeting && !isBusy && value.trim().length === 0 && (
           <span className={`composer__phrases ${fading ? 'composer__phrases--fade' : ''}`} aria-hidden="true">
             {placeholder}
           </span>
@@ -91,7 +114,20 @@ export function Composer({
       </div>
 
       <div className="composer__bar">
-        <span className="composer__hint">Vidora AI answers from this meeting</span>
+        <button
+          className="composer__attach"
+          onClick={(e) => onPickMeeting(e)}
+          disabled={disabled}
+          aria-label="Choose a meeting"
+          title={activeMeeting ? 'Change meeting' : 'Choose a meeting'}
+        >
+          <PlusIcon size={20} />
+        </button>
+
+        <span className="composer__hint">
+          {activeMeeting ? 'Vidora AI answers from this meeting' : 'Add a meeting to start chatting'}
+        </span>
+
         {isBusy ? (
           <button className="composer__send composer__send--stop" onClick={onStop} aria-label="Stop generating">
             <StopIcon size={15} />

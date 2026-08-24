@@ -10,6 +10,7 @@ import type { ChatMessage, Meeting, MeetingSummary } from './lib/types';
 import { Sidebar } from './components/Sidebar';
 import { ChatArea } from './components/ChatArea';
 import { MeetingModal } from './components/MeetingModal';
+import { MeetingPicker } from './components/MeetingPicker';
 import { AuthScreen } from './components/AuthScreen';
 import { Landing } from './components/Landing';
 import { LogoMark } from './components/Icons';
@@ -17,6 +18,7 @@ import './App.css';
 import './components/Sidebar.css';
 import './components/ChatArea.css';
 import './components/MeetingModal.css';
+import './components/MeetingPicker.css';
 import './components/AuthScreen.css';
 import './components/Landing.css';
 
@@ -34,6 +36,8 @@ export default function App() {
   const [loadError, setLoadError] = useState('');
   const [meetingOpen, setMeetingOpen] = useState(false);
   const [meetingSource, setMeetingSource] = useState<'url' | 'file'>('url');
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerAnchor, setPickerAnchor] = useState<HTMLElement | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth <= 860 : false
@@ -246,6 +250,12 @@ export default function App() {
 
   const toggleSidebar = () => setSidebarOpen((v) => !v);
 
+  const openPicker = (anchor?: HTMLElement | null) => {
+    const attachBtn = anchor ?? document.querySelector<HTMLElement>('.composer__attach');
+    setPickerAnchor(attachBtn ?? null);
+    setPickerOpen(true);
+  };
+
   if (isBooting) {
     return (
       <div className="app app--boot">
@@ -299,7 +309,7 @@ export default function App() {
         selectedId={selectedId}
         collapsed={!sidebarOpen}
         onSelect={handleSelect}
-        onNewMeeting={handleNewMeeting}
+        onNewMeeting={() => handleNewMeeting('url')}
         onDelete={handleDelete}
         onClose={() => setSidebarOpen(false)}
         onExpand={() => setSidebarOpen(true)}
@@ -320,6 +330,16 @@ export default function App() {
         onRetry={handleRetry}
         onNewMeeting={() => handleNewMeeting('url')}
         onUpload={() => handleNewMeeting('file')}
+        activeMeetingChip={
+          activeMeeting
+            ? {
+                title: activeMeeting.title,
+                isYoutube: /youtube\.com|youtu\.be/i.test(activeMeeting.source ?? ''),
+              }
+            : undefined
+        }
+        onClearMeeting={() => setSelectedId(null)}
+        onPickMeeting={(e) => openPicker(e?.currentTarget as HTMLElement | null)}
         isMobile={isMobile}
         onToggleSidebar={toggleSidebar}
       />
@@ -335,6 +355,17 @@ export default function App() {
         onClose={() => setMeetingOpen(false)}
         onProcessed={handleProcessed}
         defaultSource={meetingSource}
+      />
+
+      <MeetingPicker
+        open={pickerOpen}
+        anchor={pickerAnchor}
+        meetings={meetings}
+        activeId={selectedId}
+        onSelect={handleSelect}
+        onUpload={() => handleNewMeeting('file')}
+        onClose={() => setPickerOpen(false)}
+        isMobile={isMobile}
       />
     </div>
   );
