@@ -153,7 +153,7 @@ export function Sidebar({
           <button className="sidebar__rail-btn sidebar__rail-btn--chat" onClick={onNewChat} aria-label="New chat" title="New chat">
             <NewChatIcon size={18} />
           </button>
-          <button className="sidebar__rail-btn sidebar__rail-btn--docs" onClick={onExpand} aria-label="Meetings" title="Meetings">
+          <button className="sidebar__rail-btn sidebar__rail-btn--docs" onClick={onExpand} aria-label="Documents" title="Documents">
             <PlayIcon size={18} />
           </button>
           <div className="sidebar__rail-spacer" />
@@ -174,14 +174,14 @@ export function Sidebar({
 
         <div className="sidebar__section sidebar__section--scroll">
           <div className="sidebar__section-head">
-            <span className="sidebar__section-title">My meetings</span>
+            <span className="sidebar__section-title">Documents</span>
             <span className="sidebar__count">{meetings.length}</span>
           </div>
 
           <div className="doc-list">
             {meetings.length === 0 && (
               <div className="doc-list__empty">
-                <p>No meetings yet.</p>
+                <p>No documents yet.</p>
                 <p>Add a YouTube link or upload a recording to start.</p>
               </div>
             )}
@@ -216,7 +216,7 @@ export function Sidebar({
                     className={`meeting-item__del ${isConfirming ? 'meeting-item__del--confirm' : ''} ${isDeleting ? 'meeting-item__del--busy' : ''}`}
                     onClick={() => handleDelete(m)}
                     disabled={isDeleting}
-                    title={isConfirming ? 'Click again to confirm' : 'Delete meeting'}
+                    title={isConfirming ? 'Click again to confirm' : 'Delete document'}
                     aria-label={`Delete ${m.title}`}
                   >
                     <TrashIcon size={14} />
