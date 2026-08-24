@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  chatWithMeeting,
+  chatQuery,
   deleteMeeting,
   getMeeting,
   listMeetings,
@@ -30,7 +30,7 @@ export default function App() {
   const [meetings, setMeetings] = useState<MeetingSummary[]>([]);
   const [meetingDetails, setMeetingDetails] = useState<Record<number, Meeting>>({});
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [messagesByMeeting, setMessagesByMeeting] = useState<Record<number, ChatMessage[]>>({});
+  const [messagesByMeeting, setMessagesByMeeting] = useState<Record<number | string, ChatMessage[]>>({});
   const [composerValue, setComposerValue] = useState('');
   const [isThinking, setIsThinking] = useState(false);
   const [loadError, setLoadError] = useState('');
@@ -45,7 +45,9 @@ export default function App() {
   const abortRef = useRef<AbortController | null>(null);
 
   const activeMeeting = selectedId !== null ? meetingDetails[selectedId] ?? null : null;
-  const activeMessages = selectedId !== null ? messagesByMeeting[selectedId] ?? [] : [];
+  // Concierge mode (no meeting) keeps its own thread under the 'concierge' key.
+  const activeKey: number | 'concierge' = activeMeeting ? activeMeeting.id : 'concierge';
+  const activeMessages = messagesByMeeting[activeKey] ?? [];
 
   // Track viewport width for mobile mode
   useEffect(() => {
@@ -151,23 +153,30 @@ export default function App() {
   const handleSend = useCallback(
     async (overrideText?: string) => {
       const text = (overrideText ?? composerValue).trim();
-      if (!text || isThinking || !activeMeeting) return;
+      if (!text || isThinking) return;
 
-      const meetingId = activeMeeting.id;
+      // No meeting selected → concierge mode (chat about Vidora AI itself).
+      // The concierge thread is keyed by null; per-meeting threads by their id.
+      const meetingId: number | null = activeMeeting ? activeMeeting.id : null;
       const userMsg: ChatMessage = {
         id: crypto.randomUUID(),
         role: 'user',
         content: text,
+        meetingId,
+        concierge: meetingId === null,
       };
       const assistantMsg: ChatMessage = {
         id: crypto.randomUUID(),
         role: 'assistant',
         content: '',
+        meetingId,
+        concierge: meetingId === null,
+        streaming: true,
       };
 
       setMessagesByMeeting((prev) => ({
         ...prev,
-        [meetingId]: [...(prev[meetingId] ?? []), userMsg, assistantMsg],
+        [meetingId ?? 'concierge']: [...(prev[meetingId ?? 'concierge'] ?? []), userMsg, assistantMsg],
       }));
       setComposerValue('');
       setIsThinking(true);
@@ -176,28 +185,47 @@ export default function App() {
       abortRef.current = controller;
 
       try {
-        const res = await chatWithMeeting(meetingId, { question: text }, controller.signal);
-        setMessagesByMeeting((prev) => ({
-          ...prev,
-          [meetingId]: (prev[meetingId] ?? []).map((m) =>
-            m.id === assistantMsg.id ? { ...m, content: res.answer } : m
-          ),
-        }));
+        await chatQuery(
+          meetingId,
+          text,
+          {
+            onDelta: (delta) =>
+              setMessagesByMeeting((prev) => ({
+                ...prev,
+                [meetingId ?? 'concierge']: (prev[meetingId ?? 'concierge'] ?? []).map((m) =>
+                  m.id === assistantMsg.id ? { ...m, content: m.content + delta } : m
+                ),
+              })),
+            onError: (message) =>
+              setMessagesByMeeting((prev) => ({
+                ...prev,
+                [meetingId ?? 'concierge']: (prev[meetingId ?? 'concierge'] ?? []).map((m) =>
+                  m.id === assistantMsg.id
+                    ? { ...m, content: m.content || message, error: true, streaming: false }
+                    : m
+                ),
+              })),
+            onDone: () =>
+              setMessagesByMeeting((prev) => ({
+                ...prev,
+                [meetingId ?? 'concierge']: (prev[meetingId ?? 'concierge'] ?? []).map((m) =>
+                  m.id === assistantMsg.id ? { ...m, streaming: false } : m
+                ),
+              })),
+          },
+          controller.signal
+        );
       } catch (e) {
         const msg = e instanceof Error ? e.message : 'Request failed';
         const aborted = (e as Error)?.name === 'AbortError';
-        setMessagesByMeeting((prev) => ({
-          ...prev,
-          [meetingId]: (prev[meetingId] ?? []).map((m) =>
-            m.id === assistantMsg.id
-              ? {
-                  ...m,
-                  content: aborted ? m.content : msg,
-                  error: !aborted,
-                }
-              : m
-          ),
-        }));
+        if (!aborted) {
+          setMessagesByMeeting((prev) => ({
+            ...prev,
+            [meetingId ?? 'concierge']: (prev[meetingId ?? 'concierge'] ?? []).map((m) =>
+              m.id === assistantMsg.id ? { ...m, content: msg, error: true, streaming: false } : m
+            ),
+          }));
+        }
       } finally {
         setIsThinking(false);
         abortRef.current = null;
@@ -209,43 +237,39 @@ export default function App() {
   const handleStop = () => {
     abortRef.current?.abort();
     setIsThinking(false);
-    setMessagesByMeeting((prev) => {
-      if (selectedId === null) return prev;
-      return {
-        ...prev,
-        [selectedId]: (prev[selectedId] ?? []).map((m) =>
-          m.role === 'assistant' && m.content === '' ? { ...m, content: 'Stopped.' } : m
-        ),
-      };
-    });
+    setMessagesByMeeting((prev) => ({
+      ...prev,
+      [activeKey]: (prev[activeKey] ?? []).map((m) =>
+        m.role === 'assistant' && m.content === '' ? { ...m, content: 'Stopped.' } : m
+      ),
+    }));
   };
 
   const handleRegenerate = useCallback(() => {
     const thread = activeMessages;
     const lastUser = [...thread].reverse().find((m) => m.role === 'user');
     if (!lastUser) return;
-    setMessagesByMeeting((prev) => {
-      if (selectedId === null) return prev;
-      return { ...prev, [selectedId]: prev[selectedId].filter((m) => m.role === 'user') };
-    });
+    setMessagesByMeeting((prev) => ({
+      ...prev,
+      [activeKey]: prev[activeKey].filter((m) => m.role === 'user'),
+    }));
     void handleSend(lastUser.content);
-  }, [activeMessages, handleSend, selectedId]);
+  }, [activeMessages, handleSend, activeKey]);
 
   const handleRetry = useCallback(
     (failedId: string) => {
-      if (selectedId === null) return;
-      const thread = messagesByMeeting[selectedId] ?? [];
+      const thread = messagesByMeeting[activeKey] ?? [];
       const idx = thread.findIndex((m) => m.id === failedId);
       if (idx < 0) return;
       const question = [...thread.slice(0, idx)].reverse().find((m) => m.role === 'user');
       if (!question) return;
       setMessagesByMeeting((prev) => ({
         ...prev,
-        [selectedId]: (prev[selectedId] ?? []).filter((m) => m.id !== failedId),
+        [activeKey]: (prev[activeKey] ?? []).filter((m) => m.id !== failedId),
       }));
       void handleSend(question.content);
     },
-    [messagesByMeeting, selectedId, handleSend]
+    [messagesByMeeting, activeKey, handleSend]
   );
 
   const toggleSidebar = () => setSidebarOpen((v) => !v);

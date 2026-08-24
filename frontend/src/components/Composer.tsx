@@ -10,17 +10,25 @@ interface ComposerProps {
   activeMeeting?: { title: string; isYoutube: boolean };
   onClearMeeting: () => void;
   onPickMeeting: (e?: React.MouseEvent) => void;
-  disabled?: boolean;
 }
 
-// Rotating placeholder phrases shown one at a time inside the empty text box,
-// each nudging a different kind of follow-up on the active meeting.
-const PLACEHOLDER_PHRASES = [
+// Rotating placeholder phrases shown one at a time inside the empty text box.
+// When a meeting is active these steer follow-up prompts; otherwise they invite
+// a product / concierge question, since chatting no longer requires a meeting.
+const MEETING_PHRASES = [
   'Ask anything about this meeting…',
   'What were the key decisions?',
   'Summarize the action items.',
   'What open questions are still unanswered?',
   'What did the host say about the timeline?',
+];
+
+const CONCIERGE_PHRASES = [
+  'Ask anything — or add a meeting to chat with its content.',
+  'What is Vidora AI and how does it work?',
+  'How do I upload a video and ask about it?',
+  'What can you summarize from a meeting?',
+  'Tell me how to get started.',
 ];
 
 const ROTATE_MS = 3200;
@@ -34,14 +42,15 @@ export function Composer({
   activeMeeting,
   onClearMeeting,
   onPickMeeting,
-  disabled,
 }: ComposerProps) {
   const ref = useRef<HTMLTextAreaElement>(null);
   const [focused, setFocused] = useState(false);
   const [phraseIndex, setPhraseIndex] = useState(0);
   const [fading, setFading] = useState(false);
 
-  const canSend = value.trim().length > 0 && !isBusy && !disabled;
+  const canSend = value.trim().length > 0 && !isBusy;
+
+  const PHRASES = activeMeeting ? MEETING_PHRASES : CONCIERGE_PHRASES;
 
   useEffect(() => {
     const el = ref.current;
@@ -55,16 +64,16 @@ export function Composer({
     const id = window.setInterval(() => {
       setFading(true);
       window.setTimeout(() => {
-        setPhraseIndex((i) => (i + 1) % PLACEHOLDER_PHRASES.length);
+        setPhraseIndex((i) => (i + 1) % PHRASES.length);
         setFading(false);
       }, 240);
     }, ROTATE_MS);
     return () => window.clearInterval(id);
-  }, [isBusy, value]);
+  }, [isBusy, value, PHRASES]);
 
   const placeholder = activeMeeting
     ? 'Ask anything about this meeting…'
-    : PLACEHOLDER_PHRASES[phraseIndex];
+    : PHRASES[phraseIndex];
 
   const submit = () => {
     if (!canSend) return;
@@ -72,7 +81,7 @@ export function Composer({
   };
 
   return (
-    <div className={`composer ${focused ? 'composer--focused' : ''} ${disabled ? 'composer--disabled' : ''}`}>
+    <div className={`composer ${focused ? 'composer--focused' : ''}`}>
       {activeMeeting && (
         <div className="composer__doc">
           <span className="composer__doc-label">Asking about</span>
@@ -104,7 +113,6 @@ export function Composer({
               submit();
             }
           }}
-          disabled={disabled}
         />
         {!activeMeeting && !isBusy && value.trim().length === 0 && (
           <span className={`composer__phrases ${fading ? 'composer__phrases--fade' : ''}`} aria-hidden="true">
@@ -117,7 +125,6 @@ export function Composer({
         <button
           className="composer__attach"
           onClick={(e) => onPickMeeting(e)}
-          disabled={disabled}
           aria-label="Choose a meeting"
           title={activeMeeting ? 'Change meeting' : 'Choose a meeting'}
         >
@@ -125,7 +132,7 @@ export function Composer({
         </button>
 
         <span className="composer__hint">
-          {activeMeeting ? 'Vidora AI answers from this meeting' : 'Add a meeting to start chatting'}
+          {activeMeeting ? 'Vidora AI answers from this meeting' : 'Ask Vidora AI anything'}
         </span>
 
         {isBusy ? (

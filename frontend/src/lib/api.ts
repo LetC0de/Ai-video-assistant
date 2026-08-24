@@ -1,6 +1,4 @@
 import type {
-  ChatRequest,
-  ChatResponse,
   LoginInput,
   Meeting,
   MeetingSummary,
@@ -94,18 +92,65 @@ export async function deleteMeeting(id: number): Promise<void> {
   await handle<unknown>(res);
 }
 
-export async function chatWithMeeting(
-  id: number,
-  req: ChatRequest,
+// Streaming chat against /chat/query (SSE). With meetingId set, retrieves from
+// that meeting's transcript; with meetingId null, answers in concierge mode.
+export async function chatQuery(
+  meetingId: number | null,
+  question: string,
+  handlers: {
+    onDelta?: (delta: string) => void;
+    onError?: (message: string) => void;
+    onDone?: () => void;
+  },
   signal?: AbortSignal
-): Promise<ChatResponse> {
-  const res = await fetch(`${BASE}/meetings/${id}/chat`, {
+): Promise<void> {
+  const res = await fetch(`${BASE}/chat/query`, {
     method: 'POST',
     headers: authHeaders({ 'Content-Type': 'application/json' }),
-    body: JSON.stringify(req),
+    body: JSON.stringify({ meeting_id: meetingId, question }),
     signal,
   });
-  return handle<ChatResponse>(res);
+  if (!res.ok || !res.body) {
+    let detail = res.statusText;
+    try {
+      const body = await res.json();
+      if (body?.detail) detail = typeof body.detail === 'string' ? body.detail : JSON.stringify(body.detail);
+    } catch {
+      /* keep statusText */
+    }
+    handlers.onError?.(detail || `Request failed (${res.status})`);
+    return;
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    // SSE frames are separated by a blank line.
+    let sep: number;
+    while ((sep = buffer.indexOf('\n\n')) !== -1) {
+      const frame = buffer.slice(0, sep);
+      buffer = buffer.slice(sep + 2);
+      const evMatch = frame.match(/^event:\s*(.+)$/m);
+      const dataMatch = frame.match(/^data:\s*(.+)$/m);
+      if (!evMatch || !dataMatch) continue;
+      const event = evMatch[1].trim();
+      let data: any;
+      try {
+        data = JSON.parse(dataMatch[1].trim());
+      } catch {
+        continue;
+      }
+      if (event === 'token') handlers.onDelta?.(data.delta ?? '');
+      else if (event === 'error') handlers.onError?.(data.message ?? 'Something went wrong.');
+      else if (event === 'done') handlers.onDone?.();
+    }
+  }
 }
 
 // ---------- Auth ----------

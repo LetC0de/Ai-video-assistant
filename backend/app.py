@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 
 from src.meeting.router import meeting_router
 from src.user.router import user_router
+from src.chat.router import chat_router
 
 load_dotenv()
 
@@ -20,6 +21,7 @@ app.add_middleware(
 
 app.include_router(meeting_router)
 app.include_router(user_router)
+app.include_router(chat_router)
 
 
 @app.get("/health")

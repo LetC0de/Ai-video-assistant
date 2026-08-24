@@ -313,6 +313,20 @@
   font-size: 13px;
   font-weight: 700;
   color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.msg__author-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--brand-deep);
+  background: var(--brand-glow);
+  padding: 2px 7px;
+  border-radius: var(--radius-pill);
 }
 
 .msg__body {

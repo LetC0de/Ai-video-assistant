@@ -86,7 +86,7 @@ export function ChatArea({
         </div>
       )}
 
-      {!meeting ? (
+      {!meeting && !hasChat ? (
         <div className="chat__welcome">
           <div className="welcome__inner">
             <div className="welcome__mark"><LogoMark size={46} /></div>
@@ -109,15 +109,40 @@ export function ChatArea({
             </div>
           </div>
         </div>
-      ) : hasChat ? (
+      ) : (
         <div className="chat__thread" ref={scrollRef}>
           <div className="chat__thread-inner">
-            {meeting.summary && (
+            {meeting?.summary && (
               <SummaryPanel
                 meeting={meeting}
                 open={summaryOpen}
                 onToggle={() => setSummaryOpen((v) => !v)}
               />
+            )}
+            {/* Meeting selected but no messages yet: show the empty state + prompts. */}
+            {meeting && !hasChat && (
+              <div className="chat__empty">
+                <p className="chat__empty-title">Ask anything about this meeting</p>
+                <p className="chat__empty-sub">Questions are answered from what was actually said.</p>
+              </div>
+            )}
+            {meeting && !hasChat && (
+              <div className="welcome__suggestions">
+                {SUGGESTIONS.map((s, i) => (
+                  <button
+                    key={i}
+                    className="suggestion"
+                    onClick={() => {
+                      onComposerChange(s.text);
+                      onSend();
+                    }}
+                    style={{ animationDelay: `${120 + i * 70}ms` }}
+                  >
+                    <span className="suggestion__icon">{s.icon}</span>
+                    <span className="suggestion__text">{s.text}</span>
+                  </button>
+                ))}
+              </div>
             )}
             {messages.map((m, i) => (
               <ChatMessageView
@@ -144,47 +169,6 @@ export function ChatArea({
             <div ref={bottomRef} />
           </div>
         </div>
-      ) : (
-        <div className="chat__thread" ref={scrollRef}>
-          <div className="chat__thread-inner">
-            <SummaryPanel meeting={meeting} open={summaryOpen} onToggle={() => setSummaryOpen((v) => !v)} />
-
-            <div className="chat__empty">
-              <p className="chat__empty-title">Ask anything about this meeting</p>
-              <p className="chat__empty-sub">Questions are answered from what was actually said.</p>
-            </div>
-
-            <div className="welcome__suggestions">
-              {SUGGESTIONS.map((s, i) => (
-                <button
-                  key={i}
-                  className="suggestion"
-                  onClick={() => {
-                    onComposerChange(s.text);
-                    onSend();
-                  }}
-                  style={{ animationDelay: `${120 + i * 70}ms` }}
-                >
-                  <span className="suggestion__icon">{s.icon}</span>
-                  <span className="suggestion__text">{s.text}</span>
-                </button>
-              ))}
-            </div>
-
-            {isThinking && (
-              <div className="msg msg--assistant msg--thinking">
-                <div className="msg__meta">
-                  <span className="msg__avatar msg__avatar--ai"><SparkIcon size={15} /></span>
-                  <span className="msg__author">Vidora AI</span>
-                </div>
-                <div className="msg__body">
-                  <TypingDots />
-                </div>
-              </div>
-            )}
-            <div ref={bottomRef} />
-          </div>
-        </div>
       )}
 
       <div className="chat__composer-wrap">
@@ -197,12 +181,11 @@ export function ChatArea({
           activeMeeting={activeMeetingChip}
           onClearMeeting={onClearMeeting}
           onPickMeeting={onPickMeeting}
-          disabled={!meeting}
         />
         <p className="chat__footnote">
           {meeting
             ? 'Vidora AI answers from this meeting — grounded in the transcript.'
-            : 'Add a meeting to start chatting with its content.'}
+            : 'Ask Vidora AI anything — or add a meeting to chat about its content.'}
         </p>
       </div>
     </main>

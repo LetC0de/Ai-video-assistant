@@ -46,21 +46,14 @@ export interface ProcessMeetingInput {
   language?: string;
 }
 
-export interface ChatRequest {
-  question: string;
-}
-
-export interface ChatResponse {
-  answer: string;
-}
-
 export type MessageRole = 'user' | 'assistant';
 
 export interface ChatMessage {
   id: string;
   role: MessageRole;
   content: string;
-  meetingId?: number;
+  meetingId?: number | null;
+  concierge?: boolean;
   streaming?: boolean;
   error?: boolean;
 }
