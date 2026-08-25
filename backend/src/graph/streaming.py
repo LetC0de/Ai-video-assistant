@@ -125,6 +125,26 @@ async def stream_question(
                 return result.get("retrieved_documents", [])
 
             docs = await asyncio.to_thread(_retrieve)
+
+            if not docs:
+                # No chunks found: never hand an empty context to the model (it
+                # would hallucinate). Reply grounded + helpful and checkpoint it.
+                fallback = (
+                    "I couldn't find this in the meeting transcript for the selected "
+                    "video. Try rephrasing, or ask about a specific topic, person, "
+                    "decision, or moment from the recording."
+                )
+                yield _sse("token", {"delta": fallback})
+                yield _sse("done", {"meeting_id": meeting_id})
+                await _checkpoint(
+                    thread_id=thread_id,
+                    user=user,
+                    question=question,
+                    answer=fallback,
+                    meeting_id=meeting_id,
+                )
+                return
+
             context = "\n\n".join(
                 (d.page_content if hasattr(d, "page_content") else str(d)) for d in docs
             )
