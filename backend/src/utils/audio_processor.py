@@ -102,18 +102,19 @@ def process_input(source: str, language: str = "english") -> str:
         return _transcribe_from_audio(wav_path, language=language)
 
     # ── YouTube URL ──────────────────────────────────────────────
-    # Caption fetch is language-aware. For a Hindi source we ask for the 'hi'
-    # caption directly; for English (or default) we try 'en' and fall back to
-    # 'hi' (the caption API raises if neither exists, and we then download). If
-    # the only caption we got is Hindi, translate it to English so the rest of
-    # the pipeline (summary / Qdrant / chat) — which is English-oriented — stays
-    # coherent. This avoids the yt-dlp 403 download path for captioned videos.
-    caption_langs = ["hi"] if language.lower() == "hinglish" else ["en", "hi"]
+    # Always ask for English first, then Hindi. A video's "Hindi" may only exist
+    # as a translation target (not a real 'hi' subtitle track), so requesting
+    # ONLY ['hi'] for an English video fails and falls through to the yt-dlp
+    # download (which 403s). By requesting ['en','hi'] we always get a usable
+    # caption: English videos return 'en' directly; Hindi videos return 'hi' and
+    # we translate it to English so the rest of the pipeline stays coherent. This
+    # makes the language selector forgiving — the wrong choice no longer crashes.
+    caption_langs = ["en", "hi"]
     print("🎬 Trying YouTube official transcript...")
     try:
         text, lang_code = get_youtube_transcript(source, languages=caption_langs)
         print(f"✅ YouTube transcript found! (lang={lang_code})")
-        if language.lower() == "hinglish" or (lang_code and lang_code.lower() != "en"):
+        if lang_code and lang_code.lower() != "en":
             print("🔁 Translating non-English caption to English...")
             text = _translate_to_english(text)
         return text

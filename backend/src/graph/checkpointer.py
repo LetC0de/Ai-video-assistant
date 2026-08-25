@@ -79,16 +79,24 @@ async def init_checkpointer() -> AsyncPostgresSaver:
     #   recycled, preventing slow memory/state drift on the server side.
     # - keepalives: enable TCP keepalive (passed through to the connection) so a
     #   dropped/stale socket is detected quickly.
-    # No extra query (SELECT 1 / pre-ping) is run on checkout: that would add a
-    # full round-trip to every checkpoint read/write, and on a distant DB that is
-    # a large, constant tax. max_idle/max_lifetime already retire stale conns on
-    # a timer, so the pre-ping buys nothing here that idle-recycling doesn't.
+    # check: validate a connection on checkout with a single SELECT 1. Idle
+    # recycling (max_idle/max_lifetime) retires conns on a timer, but a connection
+    # can still die between recycle and the next query (we saw
+    # "server closed the connection unexpectedly" on aget_state). The check callback
+    # makes the pool discard a dead connection and hand out a fresh one instead of
+    # letting the checkpoint read/write fail. One lightweight round-trip per
+    # checkout is a fair price for not dropping chat turns.
+    async def _check_connection(conn) -> None:
+        async with conn.cursor() as cur:
+            await cur.execute("SELECT 1")
+
     _pool = AsyncConnectionPool(
         conn_string,
         open=False,
         max_size=20,
         max_idle=280,          # recycle idle conns before the ~5min server drop
         max_lifetime=1800,     # 30min hard cap on connection age
+        check=_check_connection,
         kwargs={"autocommit": True, "keepalives": 1},
     )
     await _pool.open()
