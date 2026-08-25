@@ -403,3 +403,52 @@
   padding: 3px 10px;
   border-radius: var(--radius-pill);
 }
+
+/* ---------- Language selector (contextual follow-up) ---------- */
+/* Appears only after a URL/file is provided — one line of question text and two
+   compact option chips, so it reads as a natural follow-up, not a control. */
+.lang-select {
+  margin-bottom: 16px;
+  animation: rise 0.25s ease both;
+}
+
+.lang-select__q {
+  margin: 0 0 9px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.lang-select__options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.lang-select__opt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 44px;
+  border-radius: 11px;
+  border: 1.5px solid var(--line);
+  background: var(--surface-2);
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition),
+    color var(--transition), box-shadow var(--transition);
+}
+
+.lang-select__opt:hover {
+  border-color: var(--brand);
+  color: var(--ink);
+}
+
+.lang-select__opt--active {
+  border-color: var(--brand);
+  background: var(--brand-glow);
+  color: var(--brand-deep);
+  box-shadow: 0 0 0 3px rgba(var(--brand-rgb), 0.12);
+}

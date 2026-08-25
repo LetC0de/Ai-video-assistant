@@ -11,12 +11,24 @@ interface MeetingModalProps {
 
 type Source = 'url' | 'file';
 type Phase = 'idle' | 'processing' | 'done' | 'error';
+type Lang = 'english' | 'hinglish';
+
+// Spoken-language choices. "hinglish" routes Hindi/Hinglish audio through the
+// Sarvam API (transcribe + translate to English); "english" uses local Whisper.
+const LANGUAGE_OPTIONS: {
+  value: Lang;
+  label: string;
+}[] = [
+  { value: 'english', label: 'English' },
+  { value: 'hinglish', label: 'Hindi' },
+];
 
 export function MeetingModal({ open, onClose, onProcessed, defaultSource = 'url' }: MeetingModalProps) {
   const [source, setSource] = useState<Source>('url');
   const [url, setUrl] = useState('');
   const [fileName, setFileName] = useState('');
   const [file, setFile] = useState<File | null>(null);
+  const [language, setLanguage] = useState<Lang>('english');
   const [phase, setPhase] = useState<Phase>('idle');
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState('');
@@ -30,6 +42,7 @@ export function MeetingModal({ open, onClose, onProcessed, defaultSource = 'url'
       setUrl('');
       setFileName('');
       setFile(null);
+      setLanguage('english');
       setPhase('idle');
       setProgress(0);
       setError('');
@@ -75,8 +88,8 @@ export function MeetingModal({ open, onClose, onProcessed, defaultSource = 'url'
     try {
       const meeting = await processMeeting(
         source === 'url'
-          ? { url: url.trim() }
-          : { file: file as File }
+          ? { url: url.trim(), language }
+          : { file: file as File, language }
       );
       window.clearInterval(tick);
       setProgress(100);
@@ -85,9 +98,18 @@ export function MeetingModal({ open, onClose, onProcessed, defaultSource = 'url'
     } catch (e) {
       window.clearInterval(tick);
       setPhase('error');
-      setError(e instanceof Error ? e.message : 'Could not process this source.');
+      // Turn raw backend messages into friendly guidance. A Hindi video sent
+      // through English Whisper (or a Sarvam failure) shows a clear next step
+      // instead of a cryptic error that makes the app feel broken.
+      const raw = e instanceof Error ? e.message : '';
+      const looksLikeTranscribe = /sarvam|transcri|process failed|english/i.test(raw);
+      setError(
+        looksLikeTranscribe
+          ? 'Transcription failed. If this is a Hindi video, choose “Hindi / Hinglish” above and retry — English mode can’t read Hindi audio.'
+          : (raw || 'Could not process this source.')
+      );
     }
-  }, [source, url, file, onProcessed]);
+  }, [source, url, file, language, onProcessed]);
 
   if (!open) return null;
 
@@ -123,6 +145,29 @@ export function MeetingModal({ open, onClose, onProcessed, defaultSource = 'url'
                 Upload file
               </button>
             </div>
+
+            {/* Language question appears ONLY after a source is provided — a
+                single line + two options, so it reads as a natural follow-up
+                ("what language is this?") instead of a permanent control. */}
+            {(source === 'url' ? url.trim().length > 0 : file !== null) && (
+              <div className="lang-select" role="radiogroup" aria-label="Audio language">
+                <p className="lang-select__q">What language is this video in?</p>
+                <div className="lang-select__options">
+                  {LANGUAGE_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      role="radio"
+                      aria-checked={language === opt.value}
+                      className={`lang-select__opt ${language === opt.value ? 'lang-select__opt--active' : ''}`}
+                      onClick={() => setLanguage(opt.value)}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {source === 'url' ? (
               <div className="meeting__url">
