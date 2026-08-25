@@ -1,28 +1,24 @@
-# Local CPU embeddings. all-MiniLM-L6-v2 is a ~80MB sentence-transformers model,
-# so we load it ONCE into a module-level singleton. Building a fresh
-# HuggingFaceEmbeddings on every call (the old get_embeddings()) re-read the
-# model off disk and re-print "Loading weights: 100%" for every retrieval and
-# every upload — that was the per-request slowdown. Caching it means the weights
-# load a single time at first use and every later call reuses the in-memory model.
+# Cloud embeddings via Mistral's embedding API — mirrors blueprint's setup exactly.
 #
-# Imported from langchain_huggingface (not langchain_community) to avoid the
-# LangChainDeprecationWarning that fired on the old class path since LangChain 0.2.2.
-from functools import lru_cache
+# Why this instead of a local model: the embed model lives on Mistral's servers,
+# so there are no local weights to download/load. That removes both the
+# "Loading weights" progress spam and the LangChainDeprecationWarning that the
+# old local all-MiniLM-L6-v2 setup produced. It also makes the embedding
+# dimension fixed at 1024 (Mistral's embed size), which must match every Qdrant
+# collection we write — so any pre-existing 384-dim collections must be rebuilt.
+#
+# Built ONCE at module import (a process-wide singleton), exactly like blueprint,
+# so every retrieval/upload reuses the same client instead of creating one per call.
+from langchain_mistralai import MistralAIEmbeddings
 
-from langchain_huggingface import HuggingFaceEmbeddings
+from src.utils.settings import settings
 
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+embeddings = MistralAIEmbeddings(
+    model=settings.MISTRAL_EMBED_MODEL,
+    api_key=settings.MISTRAL_API_KEY,
+)
 
 
-@lru_cache(maxsize=1)
-def get_embeddings() -> HuggingFaceEmbeddings:
-    """Return the shared embedding model (built lazily, then reused forever).
-
-    lru_cache(maxsize=1) makes this a process-wide singleton: the first call
-    loads the weights, every subsequent call returns the same instance, so no
-    "Loading weights" log reappears and no extra model is held in memory.
-    """
-    return HuggingFaceEmbeddings(
-        model_name=EMBEDDING_MODEL,
-        model_kwargs={"device": "cpu"},
-    )
+def get_embeddings() -> MistralAIEmbeddings:
+    """Return the shared Mistral embedding client (built once at import)."""
+    return embeddings
