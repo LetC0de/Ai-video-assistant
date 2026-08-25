@@ -1,7 +1,5 @@
-import whisper
 import os
 import requests
-from pydub import AudioSegment
 
 # Sarvam's sync STT-translate API rejects audio longer than 30s.
 # We slice each chunk into 25s pieces (with a 5s safety margin) before sending.
@@ -22,6 +20,7 @@ def load_model():
     global _model
 
     if _model is None:
+        import whisper  # heavy; imported lazily so a caption-only deploy (Render)
         print(f"Loading Whisper model: {WHISPER_MODEL} ...")
         _model = whisper.load_model(WHISPER_MODEL)
         print("Whisper model loaded.")
@@ -65,6 +64,7 @@ def transcribe_chunk_sarvam(chunk_path: str) -> str:
     if not SARVAM_API_KEY:
         raise RuntimeError("SARVAM_API_KEY is not set in environment / .env")
 
+    from pydub import AudioSegment  # heavy; lazy import (only on Sarvam path)
     audio = AudioSegment.from_wav(chunk_path)
     piece_ms = SARVAM_PIECE_SECONDS * 1000
 

@@ -1,0 +1,57 @@
+# ── Vidora AI — Render-only requirements ──────────────────────────────────────
+# Deploy target: Render (free/low-spec instance).
+# Purpose: run ONLY the caption-based ingestion path in production today.
+#
+# Excluded on purpose (heavy; not feasible on Render's free tier yet):
+#   - openai-whisper, torch, torchaudio   → local speech-to-text
+#   - yt-dlp, pydub, ffmpeg-python        → no-caption YouTube / local-file audio
+#   - sentence-transformers, langchain-huggingface, huggingface-hub
+#                                          → replaced by Mistral cloud embeddings
+#   - deep-translator                      → replaced by Mistral translation
+#   - reportlab, fpdf2                     → PDF export (not part of core flow)
+#   - tqdm                                 → not imported anywhere
+#   - tiktoken                             → not imported anywhere
+#
+# When the no-caption / local-upload paths are re-enabled (after a cloud STT
+# API is adopted), a build script + these libs must be added back. The backend
+# imports the heavy libs lazily, so the app still BOOTS cleanly without them.
+
+# ── LLM Orchestration — LangChain LCEL + Mistral ──────────────────────────────
+langchain>=0.2.0
+langchain-core>=0.2.0
+langchain-community>=0.2.0
+langchain-mistralai>=0.1.0        # LangChain wrapper for Mistral API
+mistralai>=0.4.0                  # Official Mistral Python client (embed + chat + translate)
+
+# ── RAG Pipeline ──────────────────────────────────────────────────────────────
+qdrant-client                     # Qdrant Cloud vector store client
+langchain-qdrant                 # LangChain ↔ Qdrant bridge
+
+# ── YouTube captions (the only ingestion path enabled on Render) ──────────────
+# NOTE: this dependency was missing from the original requirements.txt even
+# though the code imports it (src/utils/youtube_transcript.py). Added here.
+youtube-transcript-api>=0.6.0
+
+# ── Utilities (lightweight) ───────────────────────────────────────────────────
+python-dotenv>=1.0.0             # Load API keys from .env
+numpy>=1.26.0                    # Transitive for qdrant-client etc.; pinned explicitly
+requests>=2.32.0                 # HTTP for Sarvam / external calls
+
+# ── API Server (FastAPI) ─────────────────────────────────────────────────────
+fastapi>=0.110.0                 # Web framework / REST API
+uvicorn>=0.29.0                  # ASGI server
+python-multipart>=0.0.9          # Form/file upload support
+pydantic[email]>=2.6.0           # Schemas + EmailStr validation
+pydantic-settings>=2.2.0         # Typed settings from .env
+
+# ── Database (Postgres + conversation checkpointer) ──────────────────────────
+sqlalchemy>=2.0.0                # ORM
+psycopg2-binary>=2.9.0           # Postgres driver (Neon)
+psycopg[binary]>=3.2.0           # Async Postgres driver (LangGraph PostgresSaver)
+langgraph>=0.2.0                 # Conversation graph (memory + state)
+langgraph-checkpoint>=2.0.0      # Checkpoint primitives
+langgraph-checkpoint-postgres>=2.0.0  # Postgres-backed conversation memory
+
+# ── Auth (JWT + password hashing) ─────────────────────────────────────────────
+pyjwt>=2.8.0                     # JWT encode/decode
+pwdlib[argon2]>=0.3.0            # Argon2 password hashing (recommended)

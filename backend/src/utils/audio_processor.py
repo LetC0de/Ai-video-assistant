@@ -1,5 +1,3 @@
-import yt_dlp
-from pydub import AudioSegment
 import os
 import uuid
 import time
@@ -37,6 +35,7 @@ def download_youtube_audio(url: str) -> str:
     if cookies and os.path.exists(cookies):
         ydl_opts["cookiefile"] = cookies
 
+    import yt_dlp  # heavy; lazy import (only on no-caption fallback path)
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
         video_id = info["id"]
@@ -54,6 +53,7 @@ def download_youtube_audio(url: str) -> str:
 # converted in mono and 16khz for WhisperAI
 def convert_to_wav(input_path: str) -> str:
     """Convert any audio/video file to WAV format using pydub."""
+    from pydub import AudioSegment  # heavy; lazy import (local-file path only)
     output_path = os.path.splitext(input_path)[0] + "_converted.wav"
     audio = AudioSegment.from_file(input_path)
     audio = audio.set_channels(1).set_frame_rate(16000)  # 16khz
@@ -63,6 +63,7 @@ def convert_to_wav(input_path: str) -> str:
 
 # convert Audio into chunks
 def chunk_audio(wav_path: str, chunk_minutes: int = 10) -> list:
+    from pydub import AudioSegment  # heavy; lazy import (local-file path only)
     audio = AudioSegment.from_wav(wav_path)
     chunk_ms = chunk_minutes * 60 * 1000
 
