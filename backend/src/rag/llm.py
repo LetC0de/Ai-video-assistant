@@ -1,13 +1,16 @@
 import os
 from langchain_mistralai import ChatMistralAI
 
-MISTRAL_MODEL = "mistral-small-latest"
+from src.utils.settings import settings
+
+# Chat model mirrors blueprint exactly: settings.LLM_MODEL == "mistral-small-2506".
+MISTRAL_CHAT_MODEL = settings.LLM_MODEL
 
 
 def get_llm(temperature: float = 0.3):
     return ChatMistralAI(
-        model=MISTRAL_MODEL,
-        mistral_api_key=os.getenv("MISTRAL_API_KEY"),
+        model=MISTRAL_CHAT_MODEL,
+        mistral_api_key=settings.MISTRAL_API_KEY,
         temperature=temperature,
     )
 
@@ -15,8 +18,8 @@ def get_llm(temperature: float = 0.3):
 # Module-level singleton used by the LangGraph generate node (ainvoke) and by
 # streaming (astream). Kept at temperature 0.3 to match get_llm()'s default.
 llm = ChatMistralAI(
-    model=MISTRAL_MODEL,
-    mistral_api_key=os.getenv("MISTRAL_API_KEY"),
+    model=MISTRAL_CHAT_MODEL,
+    mistral_api_key=settings.MISTRAL_API_KEY,
     temperature=0.3,
 )
 
