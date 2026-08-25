@@ -3,6 +3,11 @@ logs
 *.log
 npm-debug.log*
 
+# Local environment files — contain backend URLs / secrets, keep out of git.
+.env
+.env.*
+!.env.example
+
 node_modules
 dist
 dist-ssr
