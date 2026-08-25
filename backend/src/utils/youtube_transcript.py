@@ -1,5 +1,7 @@
 from urllib.parse import urlparse, parse_qs
 from youtube_transcript_api import YouTubeTranscriptApi
+from langchain_mistralai import ChatMistralAI
+import os
 
 
 def extract_video_id(url: str) -> str:
@@ -20,15 +22,43 @@ def extract_video_id(url: str) -> str:
     return video_id
 
 
-def get_youtube_transcript(url: str, languages: list = None) -> str:
+def _translate_to_english(text: str) -> str:
+    """Translate a transcript into English via Mistral.
+
+    Used when the only available YouTube caption is Hindi: the rest of the
+    pipeline (summary, Qdrant embeddings, chat prompts) is English-oriented, so
+    we normalise the transcript to English here. Falls back to the original
+    text if translation fails, so a bad API call never blocks ingestion.
     """
-    Try to fetch the official YouTube transcript (captions).
+    try:
+        llm = ChatMistralAI(
+            model=os.getenv("LLM_MODEL", "mistral-small-2506"),
+            mistral_api_key=os.getenv("MISTRAL_API_KEY"),
+            temperature=0,
+        )
+        prompt = (
+            "Translate the following video transcript into natural, fluent English. "
+            "If it is already in English, return it unchanged. "
+            "Output only the translated text with no commentary or quotes.\n\n"
+            + text
+        )
+        return llm.invoke(prompt).content.strip() or text
+    except Exception:
+        return text
+
+
+def get_youtube_transcript(url: str, languages: list = None) -> tuple[str, str | None]:
+    """
+    Fetch the official YouTube transcript (captions).
 
     Returns:
-        str: transcript text
+        (transcript_text, language_code) — language_code is the code of the
+        caption that was actually returned (e.g. 'en' or 'hi'), or None if the
+        API didn't expose it.
 
     Raises:
-        Exception: if transcript is unavailable (no captions / disabled / error)
+        Exception: if no caption matches the requested languages (caller then
+        falls back to yt-dlp + speech-to-text).
     """
     video_id = extract_video_id(url)
     api = YouTubeTranscriptApi()
@@ -39,4 +69,5 @@ def get_youtube_transcript(url: str, languages: list = None) -> str:
         transcript = api.fetch(video_id)
 
     text = " ".join(snippet.text for snippet in transcript)
-    return text
+    lang_code = getattr(transcript, "language_code", None)
+    return text, lang_code

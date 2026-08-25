@@ -4,7 +4,7 @@ import os
 import uuid
 import time
 
-from src.utils.youtube_transcript import get_youtube_transcript
+from src.utils.youtube_transcript import get_youtube_transcript, _translate_to_english
 from src.utils.transcriber import transcribe_all
 
 DOWNLOAD_DIR = 'downloads'
@@ -15,6 +15,9 @@ def download_youtube_audio(url: str) -> str:
     file_id = str(uuid.uuid4())
     output_path = os.path.join(DOWNLOAD_DIR, f"{file_id}.%(ext)s")
 
+    # If the user supplied a cookies file, hand it to yt-dlp. YouTube increasingly
+    # 403s anonymous bot downloads, so a logged-in cookie is the main lever we
+    # have on this fallback path (used only when no caption exists at all).
     ydl_opts = {
         "format": "bestaudio/best",
         "outtmpl": output_path,
@@ -30,6 +33,9 @@ def download_youtube_audio(url: str) -> str:
         "quiet": False,
         "noplaylist": True,
     }
+    cookies = os.getenv("YT_COOKIES_FILE")
+    if cookies and os.path.exists(cookies):
+        ydl_opts["cookiefile"] = cookies
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         info = ydl.extract_info(url, download=True)
@@ -96,10 +102,20 @@ def process_input(source: str, language: str = "english") -> str:
         return _transcribe_from_audio(wav_path, language=language)
 
     # ── YouTube URL ──────────────────────────────────────────────
+    # Caption fetch is language-aware. For a Hindi source we ask for the 'hi'
+    # caption directly; for English (or default) we try 'en' and fall back to
+    # 'hi' (the caption API raises if neither exists, and we then download). If
+    # the only caption we got is Hindi, translate it to English so the rest of
+    # the pipeline (summary / Qdrant / chat) — which is English-oriented — stays
+    # coherent. This avoids the yt-dlp 403 download path for captioned videos.
+    caption_langs = ["hi"] if language.lower() == "hinglish" else ["en", "hi"]
     print("🎬 Trying YouTube official transcript...")
     try:
-        text = get_youtube_transcript(source)
-        print("✅ YouTube transcript found!")
+        text, lang_code = get_youtube_transcript(source, languages=caption_langs)
+        print(f"✅ YouTube transcript found! (lang={lang_code})")
+        if language.lower() == "hinglish" or (lang_code and lang_code.lower() != "en"):
+            print("🔁 Translating non-English caption to English...")
+            text = _translate_to_english(text)
         return text
     except Exception as e:
         print(f"⚠️ Transcript unavailable: {e}")
