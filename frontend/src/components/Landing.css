@@ -605,11 +605,17 @@
   flex-shrink: 0;
 }
 
-.landing__format i {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
+.landing__format-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+  color: inherit;
+  flex-shrink: 0;
 }
 
 @keyframes marquee-scroll {

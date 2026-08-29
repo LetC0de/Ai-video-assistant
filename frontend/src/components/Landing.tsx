@@ -45,14 +45,24 @@ const STEPS = [
   },
 ];
 
-// Source types Vidora AI accepts, each with a recognizable accent color.
-const FORMATS = [
-  { label: 'YouTube', color: '#e5484d' },
-  { label: 'MP4', color: '#e07a5f' },
-  { label: 'MP3', color: '#e0a82e' },
-  { label: 'WAV', color: '#c98a4b' },
-  { label: 'M4A', color: '#81b29a' },
+// Real sources Vidora AI understands — not file formats, but the kinds of
+// video/audio a user actually drops in. Each carries an icon + a garden accent.
+const SOURCES = [
+  { label: 'YouTube videos', icon: 'play', color: '#e5484d' },
+  { label: 'Meeting recordings', icon: 'upload', color: '#6d5efc' },
+  { label: 'Lectures', icon: 'play', color: '#5b6ee1' },
+  { label: 'Podcasts', icon: 'upload', color: '#2f9e63' },
+  { label: 'Interviews', icon: 'upload', color: '#2bb3c0' },
+  { label: 'Webinars', icon: 'link', color: '#e0a82e' },
+  { label: 'Live talks', icon: 'play', color: '#b06ad6' },
+  { label: 'Training videos', icon: 'upload', color: '#e07a5f' },
 ];
+
+function SourceIcon({ name }: { name: string }) {
+  if (name === 'link') return <LinkIcon size={16} />;
+  if (name === 'upload') return <UploadIcon size={16} />;
+  return <PlayIcon size={16} />;
+}
 
 function FeatureIcon({ name }: { name: string }) {
   if (name === 'lock') {
@@ -241,19 +251,21 @@ export function Landing({ onLogin, onRegister }: LandingProps) {
           </div>
         </section>
 
-        {/* ---------- Formats: a continuously scrolling marquee ---------- */}
+        {/* ---------- Sources: a continuously scrolling marquee ---------- */}
         <section className="landing__formats" aria-label="Supported sources">
           <span className="landing__formats-label">Works with</span>
           <div className="landing__marquee">
             <div className="landing__marquee-track">
-              {[...FORMATS, ...FORMATS].map((f, i) => (
+              {[...SOURCES, ...SOURCES].map((s, i) => (
                 <span
                   className="landing__format"
-                  key={`${f.label}-${i}`}
-                  aria-hidden={i >= FORMATS.length}
+                  key={`${s.label}-${i}`}
+                  aria-hidden={i >= SOURCES.length}
                 >
-                  <i style={{ background: f.color }} aria-hidden="true" />
-                  {f.label}
+                  <span className="landing__format-ico" style={{ color: s.color }} aria-hidden="true">
+                    <SourceIcon name={s.icon} />
+                  </span>
+                  {s.label}
                 </span>
               ))}
             </div>
