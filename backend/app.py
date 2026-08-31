@@ -39,7 +39,7 @@ async def lifespan(app: FastAPI):
     await close_checkpointer()
 
 
-app = FastAPI(title="AI Video Assistant API", lifespan=lifespan)
+app = FastAPI(title="AI Video Assistant", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
