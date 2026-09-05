@@ -28,3 +28,17 @@ Vidora AI is a RAG-powered video and meeting intelligence assistant. Drop in a Y
 
 🔗 **Live App:** [https://ai-video-assistant-xi.vercel.app](https://ai-video-assistant-xi.vercel.app)
 
+## Screenshots
+
+### Landing Page
+![Landing Page](screenshots/landing.png)
+*Animated landing page with hero section, features overview, and how-it-works flow.*
+
+### Login
+![Login](screenshots/login.png)
+*Secure login with JWT authentication and form validation.*
+
+### Dashboard
+![Dashboard](screenshots/home.png)
+*Main workspace — sidebar with meetings & conversations, chat area with streaming responses.*
+
