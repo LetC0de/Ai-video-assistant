@@ -1,6 +1,6 @@
 from urllib.parse import urlparse, parse_qs
 from youtube_transcript_api import YouTubeTranscriptApi
-from langchain_mistralai import ChatMistralAI
+from langchain_openai import ChatOpenAI
 import os
 
 
@@ -31,9 +31,10 @@ def _translate_to_english(text: str) -> str:
     text if translation fails, so a bad API call never blocks ingestion.
     """
     try:
-        llm = ChatMistralAI(
-            model=os.getenv("LLM_MODEL", "mistral-small-2506"),
-            mistral_api_key=os.getenv("MISTRAL_API_KEY"),
+        llm = ChatOpenAI(
+            model=os.getenv("LLM_MODEL", "openrouter/free"),
+            api_key=os.getenv("OPENROUTER_API_KEY"),
+            base_url="https://openrouter.ai/api/v1",
             temperature=0,
         )
         prompt = (

@@ -15,12 +15,13 @@ torchaudio>=2.2.0                 # Audio utilities for PyTorch
 # ── Translation (Hindi → English) ─────────────────────────────────────────────
 deep-translator>=1.11.4           # Lightweight translation wrapper (Google backend)
 
-# ── LLM Orchestration — LangChain LCEL + Mistral ──────────────────────────────
+# ── LLM Orchestration — LangChain LCEL + OpenRouter ────────────────────────────
 langchain>=0.2.0
 langchain-core>=0.2.0
 langchain-community>=0.2.0
-langchain-mistralai>=0.1.0        # LangChain wrapper for Mistral API
-mistralai>=0.4.0                  # Official Mistral Python client
+langchain-openai>=0.3.0           # ChatOpenAI — used with OpenRouter API
+langchain-mistralai>=0.1.0        # Mistral embeddings (still used for vector store)
+mistralai>=0.4.0                  # Mistral Python client (embeddings backend)
 
 # ── RAG Pipeline ──────────────────────────────────────────────────────────────
 qdrant-client                     # Qdrant Cloud vector store client

@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     MISTRAL_MODEL: str
     MISTRAL_EMBED_MODEL: str
     LLM_MODEL: str
+    OPENROUTER_API_KEY: str
     QDRANT_URL: str
     QDRANT_API_KEY: str
     DB_CONNECTION: str

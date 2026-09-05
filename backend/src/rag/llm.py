@@ -1,25 +1,27 @@
 import os
-from langchain_mistralai import ChatMistralAI
+from langchain_openai import ChatOpenAI
 
 from src.utils.settings import settings
 
-# Chat model mirrors blueprint exactly: settings.LLM_MODEL == "mistral-small-2506".
-MISTRAL_CHAT_MODEL = settings.LLM_MODEL
+# OpenRouter free model — auto-selects best available free model.
+LLM_MODEL = "openrouter/free"
 
 
 def get_llm(temperature: float = 0.3):
-    return ChatMistralAI(
-        model=MISTRAL_CHAT_MODEL,
-        mistral_api_key=settings.MISTRAL_API_KEY,
+    return ChatOpenAI(
+        model=LLM_MODEL,
+        api_key=settings.OPENROUTER_API_KEY,
+        base_url="https://openrouter.ai/api/v1",
         temperature=temperature,
     )
 
 
 # Module-level singleton used by the LangGraph generate node (ainvoke) and by
 # streaming (astream). Kept at temperature 0.3 to match get_llm()'s default.
-llm = ChatMistralAI(
-    model=MISTRAL_CHAT_MODEL,
-    mistral_api_key=settings.MISTRAL_API_KEY,
+llm = ChatOpenAI(
+    model=LLM_MODEL,
+    api_key=settings.OPENROUTER_API_KEY,
+    base_url="https://openrouter.ai/api/v1",
     temperature=0.3,
 )
 

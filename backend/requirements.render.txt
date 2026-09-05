@@ -16,12 +16,13 @@
 # API is adopted), a build script + these libs must be added back. The backend
 # imports the heavy libs lazily, so the app still BOOTS cleanly without them.
 
-# ── LLM Orchestration — LangChain LCEL + Mistral ──────────────────────────────
+# ── LLM Orchestration — LangChain LCEL + OpenRouter ────────────────────────────
 langchain>=0.2.0
 langchain-core>=0.2.0
 langchain-community>=0.2.0
-langchain-mistralai>=0.1.0        # LangChain wrapper for Mistral API
-mistralai>=0.4.0                  # Official Mistral Python client (embed + chat + translate)
+langchain-openai>=0.3.0           # ChatOpenAI — used with OpenRouter API
+langchain-mistralai>=0.1.0        # Mistral embeddings (still used for vector store)
+mistralai>=0.4.0                  # Mistral Python client (embeddings backend)
 
 # ── RAG Pipeline ──────────────────────────────────────────────────────────────
 qdrant-client                     # Qdrant Cloud vector store client
