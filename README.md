@@ -134,3 +134,90 @@ Ai Video Assistant/
 └── screenshots/                # App screenshots for README
 ```
 
+## Installation / Setup
+
+### Prerequisites
+
+- Python 3.10+
+- Node.js 18+
+- PostgreSQL (or Neon/Render database)
+- Qdrant Cloud account (free tier works)
+- OpenRouter API key ([get one free](https://openrouter.ai/))
+- Mistral AI API key ([get one free](https://console.mistral.ai/))
+- FFmpeg installed locally
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/LetC0de/Vidora-AI-.git
+cd Vidora-AI-
+```
+
+### Backend
+
+```bash
+cd backend
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure environment
+cp .env.example .env
+# Edit .env with your API keys
+
+# Run the server
+uvicorn app:app --reload
+```
+
+### Frontend
+
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Configure environment
+cp .env.example .env
+# Set VITE_API_BASE_URL to your backend URL
+
+# Start dev server
+npm run dev
+```
+
+App available at `http://localhost:5173`
+
+## Environment Variables
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `OPENROUTER_API_KEY` | OpenRouter API key for LLM chat | Yes |
+| `MISTRAL_API_KEY` | Mistral AI key for embeddings | Yes |
+| `QDRANT_URL` | Qdrant Cloud cluster URL | Yes |
+| `QDRANT_API_KEY` | Qdrant Cloud API key | Yes |
+| `DB_CONNECTION` | PostgreSQL connection string | Yes |
+| `SECRET_KEY` | JWT signing secret | Yes |
+| `ALGORITHM` | JWT algorithm (default: HS256) | Yes |
+| `EXP_TIME` | JWT expiry in minutes | Yes |
+| `CORS_ORIGINS` | Comma-separated allowed origins | No |
+| `HF_TOKEN` | HuggingFace token | No |
+| `SARVAM_API_KEY` | Sarvam AI key (for Hindi STT) | No |
+
+See [`.env.example`](backend/.env.example) for the full template.
+
+## Author
+
+**Abhishek** — Full-Stack AI Engineer
+
+- GitHub: [@LetC0de](https://github.com/LetC0de)
+- LinkedIn: [LinkedIn](https://www.linkedin.com/in/abhishek8at/)
+- Docker Hub: [abhishekdevdocker392](https://hub.docker.com/u/abhishekdevdocker392)
+
+---
+
+<p align="center">Made with ❤️</p>
+
