@@ -42,3 +42,95 @@ Vidora AI is a RAG-powered video and meeting intelligence assistant. Drop in a Y
 ![Dashboard](screenshots/home.png)
 *Main workspace — sidebar with meetings & conversations, chat area with streaming responses.*
 
+## Tech Stack
+
+### Backend
+- **FastAPI** — REST API framework
+- **LangChain + LangGraph** — RAG pipeline, conversation memory, and state management
+- **OpenRouter** — LLM inference (free models via OpenAI-compatible API)
+- **Mistral AI** — Cloud embeddings (1024-dim)
+- **Qdrant** — Vector database for transcript storage and retrieval
+- **Whisper** — Local speech-to-text transcription
+- **YouTube Transcript API** — Instant caption fetching
+- **SQLAlchemy + Alembic** — ORM and database migrations
+- **PostgreSQL (Neon)** — Database + LangGraph checkpointing
+- **JWT + Argon2** — Authentication and password hashing
+
+### Frontend
+- **React 19 + TypeScript** — UI framework
+- **Vite** — Build tool and dev server
+- **Custom CSS** — Styled with Google Fonts (Fraunces + Outfit)
+
+## Project Architecture
+
+```
+User uploads YouTube URL or file
+        │
+        ▼
+┌─────────────────────────────────────────────┐
+│            Meeting Ingestion Pipeline        │
+│                                             │
+│  Transcript ──► Summarize ──► Extract       │
+│       │           (LLM)       (LLM)        │
+│       │            │            │           │
+│       ▼            ▼            ▼           │
+│  Embeddings    Summary     Action Items     │
+│  (Mistral)    Decisions    Open Questions   │
+│       │                                  │  │
+│       ▼                                  │  │
+│  Qdrant Collection                       │  │
+│                                          │  │
+└─────────────────────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────────────────────┐
+│              RAG Chat System                │
+│                                             │
+│  User Question ──► Retrieve (Qdrant, k=4)   │
+│                        │                    │
+│                        ▼                    │
+│                   Build Context             │
+│                        │                    │
+│                        ▼                    │
+│  History (PostgresSaver) + Context + Prompt │
+│                        │                    │
+│                        ▼                    │
+│               LLM Stream (OpenRouter)       │
+│                        │                    │
+│                        ▼                    │
+│               SSE Token Stream              │
+│                        │                    │
+│                        ▼                    │
+│          Checkpoint (LangGraph + Postgres)  │
+└─────────────────────────────────────────────┘
+```
+
+## Project Structure
+
+```
+Ai Video Assistant/
+├── backend/
+│   ├── app.py                  # FastAPI entry point
+│   ├── requirements.txt        # Full local dependencies
+│   ├── requirements.render.txt # Lightweight Render deploy deps
+│   ├── Dockerfile              # Docker config
+│   ├── .env.example            # Environment template
+│   ├── migrations/             # Alembic DB migrations
+│   └── src/
+│       ├── rag/                # RAG pipeline (LLM, embeddings, vector store, prompts)
+│       ├── graph/              # LangGraph (nodes, streaming, checkpointer)
+│       ├── meeting/            # Meeting CRUD + ingestion pipeline
+│       ├── conversation/       # Conversation CRUD + message history
+│       ├── chat/               # SSE streaming chat endpoint
+│       ├── user/               # Auth (register, login, JWT)
+│       └── utils/              # Settings, DB, audio processing, transcription
+├── frontend/
+│   ├── src/
+│   │   ├── components/         # UI (Sidebar, ChatArea, MeetingModal, etc.)
+│   │   ├── lib/                # API client, auth, types, markdown renderer
+│   │   └── App.tsx             # Root component
+│   ├── package.json
+│   └── .env.example
+└── screenshots/                # App screenshots for README
+```
+
